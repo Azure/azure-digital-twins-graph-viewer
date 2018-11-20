@@ -1,0 +1,15 @@
+{
+  "Registrations":
+  [{
+    "Component": {
+     "Type": "other",
+     "Other": {
+       "Name": "dndTree.js",
+       "Version": "0.0.0",
+       "DownloadUrl": "http://bl.ocks.org/robschmuecker/7880033#dndTree.js"
+      }
+    },
+    "DevelopmentDependency": false,
+  }],
+  "Version": 1
+}
