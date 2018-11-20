@@ -1,0 +1,896 @@
+:root {
+    --main-black: rgb(0,0,0);
+    --main-white: rgb(255,255,255);
+    --main-dark-grey: rgb(31,31,31);
+    --main-grey: rgb(44,44,44);
+    --main-light-grey: rgb(55,55,55);
+    --main-lighter-grey: rgb(207,207,207);
+    --main-light-blue: rgb(0,139,245);
+    --main-blue: rgb(0,120,212);
+    --main-dark-purple: rgb(53,29,93);
+    --main-purple: rgb(92,45,145);
+    --main-magenta: rgb(180, 0, 158);
+    --main-green: rgb(134,201,2);
+    --main-gold: rgb(255,185,0);
+
+    --main-glyph-space: "\E774";
+    --main-glyph-device: "\F22C";
+    --main-glyph-sensor: "\EC4A";
+    --main-glyph-check: "\E001";
+    --main-glyph-add: "\E109";
+    --main-glyph-delete: "\E107";
+    --main-glyph-edit: "\E104";
+    --main-glyph-chev-down: "\E96E";
+    --main-glyph-chev-up: "\E96D";
+    --main-glyph-chev-right: "\E970";
+    --main-glyph-chev-left: "\E96F";
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    font-size: 15px;
+    font-family: "Segoe UI",SegoeUI,"Helvetica Neue",Helvetica,Arial,sans-serif;
+    padding: 0px;
+    margin: 0px;
+    position: relative;
+    padding: 52px 0px 54px 0px;
+    box-sizing: border-box;
+    color: var(--main-lighter-grey);
+    background-color: var(--main-dark-grey);
+}
+
+.top-header {
+    width: 100%;
+    height: 54px;
+    background-color: var(--main-grey);
+    padding: 0;
+    display: block;
+    box-sizing: inherit;
+    position: absolute;
+    top: 0;
+}
+
+.top-header-container {
+    position: relative;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.top-header-logo {
+    padding: 16px 6px 16px 16px;
+    position: relative;
+    float: left;
+    height: 22px;
+    width: 120px;
+    text-decoration: none;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+    .top-header-logo img {
+        width: 108px;
+        height: auto;
+    }
+
+.top-header-container h1 {
+    float: left;
+    margin: 0;
+    padding: 15px 0px;
+    font-size: 18px;
+    vertical-align: middle;
+    font-weight: 500;
+    color: var(--main-white);
+}
+
+    .top-header-container h1::before {
+        content: "|";
+        margin-right: 12px;
+    }
+
+.top-header-login {
+    float: right;
+    padding: 10px 16px;
+    display: table;
+    position: relative;
+    cursor: pointer;
+    height: 100%;
+}
+
+.top-header-login:hover {
+    background-color: var(--main-dark-grey);
+    color: var(--main-lighter-grey);
+}
+
+    .top-header-login > div {
+        float: left;
+        padding-left: 0px;
+    }
+
+        .top-header-login > div picture {
+            width: 32px;
+            height: 32px;
+            position: relative;
+            display: block;
+            background-color: rgba(0,0,0,.3);
+            border-radius: 50%;
+            background-repeat: no-repeat;
+            background-size: 50%;
+            background-position: 50% 50%;
+        }
+
+        .top-header-login > div picture::before {
+            content: "\E13D";
+            color: var(--main-white);
+            display: block;
+            font-family: "Segoe MDL2 Assets";
+            font-size: 16px;
+            line-height: 32px;
+            width: 100%;
+            text-align: center; 
+        }
+
+.profile-image {
+    outline: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    display: block;
+    margin: 0;
+    max-width: 100%;
+}
+
+.top-header-login > div + div {
+    overflow: hidden;
+    float: none;
+    vertical-align: middle;
+    display: table-cell;
+    padding-left: 10px;
+}
+
+.top-header-login h5 {
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: 400;
+    padding: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    display: block;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
+.top-header-login.signed-in.selected {
+    background-color: var(--main-dark-grey);
+}
+
+.top-header-login.signed-in h5::after {
+    content: "\e019";
+    font-size: 10px;
+    font-family: "Segoe MDL2 Assets";
+    margin-left: 10px;
+    top: 0px;
+    position: relative;
+}
+
+.top-header-login ul {
+    position: absolute;
+    top: 53px;
+    left: 0;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    display: none;
+    z-index: 500;
+    background-color: var(--main-dark-grey);
+    box-shadow: 0px 3px 3px rgba(0,0,0,.3);
+}
+
+    .top-header-login ul li {
+        text-align: right;
+        padding: 10px 20px;
+        cursor: pointer;
+        border: 1px 0px solid var(--main-lighter-grey);
+    }
+
+    .top-header-login ul li:hover {
+        background-color: var(--main-grey);
+        color: var(--main-white);
+    }
+
+.main-area {
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    display: block;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+    .main-area section {
+        height: 100%;
+        width: 100%;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+        box-sizing: border-box;
+        display: flex;
+        flex: 1;
+    }
+
+.graph-container nav {
+    background-color: var(--main-dark-grey);
+    border-bottom: 1px solid var(--main-grey);
+    margin: 0;
+    height: 38px;
+    width: 100%;
+}
+
+    .graph-container nav select {
+        min-width: 80px;
+        max-width: 185px;
+        height: 34px;
+        border: 1px solid rgba(255,255,255,.3);
+        background: transparent;
+        padding: 0px 8px 0px 8px;
+        font-size: 15px;
+        color: rgba(255,255,255,.6);
+        margin-right: 20px;
+    }
+
+        .graph-container nav select option {
+            background-color: #505055;
+        }
+
+ol.breadcrumb {
+    list-style: none;
+    padding: 0;
+    float: left;
+    margin: 0;
+    margin-left: 16px;
+    height: 100%;
+}
+
+    ol.breadcrumb li {
+        font-size: 14px;
+        height: 100%;
+        line-height: 16px;
+        display: inline-block;
+        padding-right: 8px;
+        vertical-align: middle;
+    }
+
+        ol.breadcrumb li a {
+            font-size: 12px;
+            line-height: 36px;
+            color: var(--main-light-blue);
+            text-decoration: none;
+            height: 100%;
+        }
+
+            ol.breadcrumb li a:before {
+                content: "/";
+                padding-right: 8px;
+                color: var(--main-lighter-grey);
+                cursor: default;
+            }
+
+        ol.breadcrumb li:last-child a {
+            color: var(--main-lighter-grey);
+            cursor: default;
+        }
+
+ul.action-menu {
+    list-style: none;
+    padding: 0;
+    float: right;
+    margin: 0;
+    height: 100%;
+}
+    ul.action-menu li {
+        display: inline-block;
+        height: 100%;
+        line-height: 34px;
+        font-size: 14px;
+        padding: 0px 14px;
+        vertical-align: middle;
+        cursor: pointer;
+        position: relative;
+    }
+
+    ul.action-menu li:hover {
+        background-color: var(--main-grey);
+    }
+
+    ul.action-menu li.selected {
+        background-color: var(--main-grey);
+    }
+
+        ul.action-menu li::before {
+            font-family: "Segoe MDL2 Assets";
+            margin-right: 8px;
+            top: +2px;
+            position: relative;
+        }
+
+        ul.action-menu li.add::before {
+            content: var(--main-glyph-add);
+        }
+
+        ul.action-menu li.edit::before {
+            content: var(--main-glyph-edit);
+        }
+
+        ul.action-menu li.delete::before {
+            content: var(--main-glyph-delete);
+        }
+
+        ul.action-menu li.show::before {
+            content: "\E9E9"
+        }
+
+        ul.action-menu li.show::after {
+            font-family: "Segoe MDL2 Assets";
+            margin-left: 4px;
+            font-size: 10px;
+            top: +2px;
+            position: relative;
+            content: "\E019"
+        }
+
+        ul.action-menu li.refresh::before {
+            content: "\E72C";
+        }
+
+        ul.action-menu li.expand::before {
+            content: "\E1D9";
+        }
+
+ul.action-menu li ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 200px;
+    background-color: var(--main-grey);
+    z-index: 500;
+    position: absolute;
+    right: 0px;
+    top: 42px;
+    display: none;
+    box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+    border-radius: 3px;
+}
+
+    ul.action-menu li ul li {
+        width: calc(100% - 16px);
+        padding: 0px 8px;
+        vertical-align: middle;
+    }
+
+    ul.action-menu li ul.showSubMenu li:nth-child(2)::before {
+        content: "\ED65";
+        font-family: "Segoe MDL2 Assets";
+        transform: rotate(90deg);
+        font-size: 12px;
+        margin-right: 12px;
+        display: inline-block;
+        position: relative;
+        top: -3px;
+        left: 3px;
+    }
+
+    ul.action-menu li ul.showSubMenu li:nth-child(3)::before {
+        content: "\ED65";
+        font-family: "Segoe MDL2 Assets";
+        transform: rotate(90deg);
+        font-size: 12px;
+        margin-right: 12px;
+        margin-left: 26px;
+        display: inline-block;
+        position: relative;
+        top: -3px;
+        left: 3px;
+    }
+
+    ul.action-menu li ul.showSubMenu li span::before {
+        font-family: "Segoe MDL2 Assets";
+        margin-right: 8px;
+        top: 3px;
+        position: relative;
+    }
+
+    ul.action-menu li ul.showSubMenu li span.space::before {
+        content: var(--main-glyph-space)
+    }
+
+    ul.action-menu li ul.showSubMenu li span.device::before {
+        content: var(--main-glyph-device)
+    }
+
+    ul.action-menu li ul.showSubMenu li span.sensor::before {
+        content: var(--main-glyph-sensor)
+    }
+
+    ul.action-menu li ul li:hover {
+        background-color: rgba(255,255,255,0.2);
+    }
+
+    ul.action-menu li ul li.selected::after {
+        content: "\E001";
+        margin-right: 8px;
+        font-family: "Segoe MDL2 Assets";
+        font-style: normal;
+        float: right;
+    }
+
+.zoom-slider-container {
+    float: right;
+    font-size: 20px;
+    margin: 8px 16px;
+}
+
+.zoom-slider {
+    -webkit-appearance: none; 
+    appearance: none;
+    width: 200px; 
+    height: 4px; 
+    background-color: rgb(100,100,100); 
+    outline: none; 
+    position: relative;
+
+}
+
+.zoom-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; 
+    appearance: none;
+    width: 6px; 
+    height: 20px; 
+    background-color: var(--main-light-blue);
+    border-radius: 3px; 
+    cursor: pointer; 
+}
+
+.zoom-slider::-moz-range-thumb {
+    width: 6px; 
+    height: 20px;
+    background-color: var(--main-light-blue);
+    border-radius: 3px; 
+    cursor: pointer; 
+}
+
+.graph-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    flex: 1;
+    -webkit-transition: .35s cubic-bezier(0.0, 0.0, 0.25, 1);
+    -moz-transition: .35s cubic-bezier(0.0, 0.0, 0.25, 1);
+    -o-transition: .35s cubic-bezier(0.0, 0.0, 0.25, 1);
+    transition: .35s cubic-bezier(0.0, 0.0, 0.25, 1);
+    box-sizing: border-box;
+}
+
+section.welcome {
+    display: block;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+section.welcome h1 {
+    font-weight: 500;
+    text-align: center;
+    font-size: 36px;
+    margin: 10px 0px;
+}
+
+section.welcome h1.icon {
+    font-size: 100px;
+    font-family: "Segoe MDL2 Assets";
+    margin: 0px;
+}
+
+section.welcome h3 {
+    text-align: center;
+    font-weight: 300;
+    margin: 0;
+}
+
+.graph-canvas {
+    width: 100%;
+    height: 100%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#alert {
+    width: 100%;
+    color: var(--main-white);
+    overflow: hidden;
+    height: 0;
+    padding: 0;
+    -webkit-transition: .35s cubic-bezier(0.0, 0.0, 0.25, 1);
+    -moz-transition: .35s cubic-bezier(0.0, 0.0, 0.25, 1);
+    -o-transition: .35s cubic-bezier(0.0, 0.0, 0.25, 1);
+    transition: .35s cubic-bezier(0.0, 0.0, 0.25, 1);
+}
+
+#alert.show {
+    padding: 16px 0px;
+    height: auto;
+}
+
+#alert h2 {
+    margin: 0;
+    padding: 0px;
+    font-size: 18px;
+    font-weight: 500;
+    flex: 1;
+    display: inline;
+}
+
+#alert p {
+    margin: 0;
+    padding: 0px 16px;
+    font-size: 14px;
+    line-height: 18px;
+    display: inline;
+    flex: 1;
+}
+
+#alert a {
+    float: right;
+    font-size: 14px;
+}
+
+#alert.error {
+    background-color: var(--main-dark-purple);
+}
+
+#alert.error h2::before {
+    font-family: "Segoe MDL2 Assets";
+    content: "\E783";
+    font-size: 20px;
+    float: left;
+    top: 3px;
+    position: relative;
+    padding: 0px 16px;
+}
+
+#alert.success {
+    background-color: var(--main-green);
+}
+
+#alert.success h2::before {
+    font-family: "Segoe MDL2 Assets";
+    content: "\E930";
+    font-size: 20px;
+    float: left;
+}
+
+#alert::after {
+    font-family: "Segoe MDL2 Assets";
+    content: "\E711";
+    font-size: 20px;
+    float: right;
+    cursor: pointer;
+    padding: 0px 16px;
+}
+
+.graph-canvas svg {
+    width: 100%;
+    height: 100%;
+}
+
+.loaderIcon {
+    flex-shrink: 0;
+    background-color: rgb(25,25,25);
+    padding: 10px;
+    border-radius: 4px;
+    position: absolute;
+    z-index: 500;
+}
+
+.graph-canvas .node {
+    cursor: pointer;
+}
+
+.graph-canvas .addIndicator {
+    visibility: hidden;
+}
+
+.graph-canvas .addIndicator {
+    visibility: hidden;
+}
+
+.graph-canvas .addIndicator.visible {
+    visibility: visible;
+}
+
+.graph-canvas .addIndicator rect {
+    stroke: var(--main-light-grey);
+    fill: var(--main-dark-grey);
+    stroke-width: 1.5;
+}
+
+.graph-canvas .addIndicator text {
+    font-size: 9px;
+    font-weight: bold;
+    fill: var(--main-lighter-grey);
+}
+
+.graph-canvas .addIndicator text.green {
+    fill: var(--main-green);
+}
+.graph-canvas .node .nodeContainer {
+    fill: var(--main-light-grey);
+}
+
+.graph-canvas .node .nodeIndicator {
+    stroke-width: 0px;
+}
+
+.nodeIndicatorType {
+    font-size: 16px;
+    font-family: "Segoe MDL2 Assets";
+    fill: var(--main-lighter-grey);
+}
+
+.graph-canvas .node .device {
+    fill: var(--main-purple);
+}
+
+.graph-canvas .node .space {
+    fill: var(--main-blue);
+}
+
+.graph-canvas .node .sensor {
+    fill: var(--main-magenta);
+}
+
+.graph-canvas .node .nodeText {
+    font-size: 13px;
+    fill: var(--main-lighter-grey);
+    overflow: hidden;
+    font-weight: 400;
+}
+
+.graph-canvas .node text:hover {
+    fill: #FFF;
+}
+
+.graph-canvas .node .collapse {
+    fill: rgba(255,255,255,0.2);
+}
+
+.graph-canvas .node .collapseText {
+    font-size: 15px;
+    font-weight: 900;
+    fill: var(--main-lighter-grey);
+    text-align: center;
+}
+
+.graph-canvas .node .none {
+    display: none;
+}
+
+.graph-canvas .link {
+    fill: none;
+    stroke: rgb(60,60,60);
+    stroke-width: 1.5px;
+}
+
+.visualizer-drawer {
+    background-color: var(--main-light-grey);
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+    margin-right: -450px;
+    height: 100%;
+    width: 450px;
+    text-align: center;
+    -webkit-transition: .35s cubic-bezier(0.0, 0.0, 0.25, 1);
+    -moz-transition: .35s cubic-bezier(0.0, 0.0, 0.25, 1);
+    -o-transition: .35s cubic-bezier(0.0, 0.0, 0.25, 1);
+    transition: .35s cubic-bezier(0.0, 0.0, 0.25, 1);
+    padding: 38px 0px 0px 0px;
+    box-sizing: border-box;
+}
+
+.visualizer-drawer.open {
+    margin-right: 0px;
+}
+
+.visualizer-drawer h2 {
+    text-align: left;
+    font-size: 20px;
+    line-height: 32px;
+    margin: 0;
+    padding: 3px 16px;
+    font-weight: 500;
+    color: var(--main-white);
+    position: absolute;
+    top: 0;
+}
+
+.visualizer-drawer h2::before {
+    font-family: "Segoe MDL2 Assets";
+    padding: 5px;
+    margin-right: 8px;
+    font-weight: 200;
+    position: relative;
+    top: 1px;
+    color: var(--main-white);
+    border-radius: 3px;
+    font-size: 16px;
+}
+
+.visualizer-drawer h2.space::before {
+    background-color: var(--main-blue);
+    content: "\E774";
+}
+
+.visualizer-drawer h2.device::before {
+    background-color: var(--main-purple);
+    content: "\F22C";
+}
+
+.visualizer-drawer h2.sensor::before {
+    background-color: var(--main-magenta);
+    content: "\EC4A";
+}
+
+.visualizer-drawer-close {
+    font-family: "Segoe MDL2 Assets";
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    top: 15px;
+    right: 16px;
+    cursor: pointer;
+    content: "\E711";
+    font-size: 20px;
+}
+
+    .visualizer-drawer-close::before {
+       content: "\E711";
+    }
+
+.visualizer-drawer-content {
+    height: 100%;
+    width: calc(100% - 32px);
+    padding: 0px 16px;
+    overflow-y: auto;
+    justify-content: center;
+}
+
+.visualizer-drawer table {
+    width: 100%;
+    margin-bottom: 20px;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+    .visualizer-drawer table caption {
+        text-align: left;
+        font-size: 16px;
+        line-height: 20px;
+        font-weight: 500;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255,255,255,.3);
+    }
+
+    .visualizer-drawer table caption::after {
+        font-family: "Segoe MDL2 Assets";
+        content: var(--main-glyph-chev-down);
+        float: right;
+        cursor: pointer;
+        font-size: 12px;
+    }
+
+.visualizer-drawer tbody {
+    display: table-row-group;
+    vertical-align: middle;
+    font-size: 13px;
+}
+
+    .visualizer-drawer tbody tr {
+        border-bottom: 1px solid rgba(255,255,255,.3);
+    }
+
+    .visualizer-drawer tbody td {
+        text-align: left;
+        font-weight: 500;
+        vertical-align: text-top;
+        padding-left: 0;
+        width: 100px;
+        padding: 10px 12px 10px 0px;
+    }
+
+    .visualizer-drawer tbody td+td {
+        font-weight: normal;
+        padding: 10px 0px;
+        text-align: left;
+        width: auto;
+    }
+
+    .visualizer-drawer table.collapsed caption::after {
+        content: var(--main-glyph-chev-left);
+    }
+
+    .visualizer-drawer table.collapsed tbody {
+        display: none;
+    }
+
+.footer {
+    width: 100%;
+    height: 54px;
+    background-color: var(--main-grey);
+    display: block;
+    box-sizing: inherit;
+    bottom: 0;
+    position: absolute;
+}
+
+.footer-container {
+    position: relative;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.footer-container ol {
+    float: left;
+    list-style-type: none;
+    margin: 0;
+    padding: 0px 16px;
+    height: 100%;
+}
+
+.footer-container li {
+    display: inline-block;
+    font-size: 14px;
+    line-height: 52px;
+    padding-right: 10px;
+    vertical-align: middle;
+    height: 100%;
+}
+
+.footer-container li a {
+    color: var(--main-light-blue);
+    text-decoration: none;
+}
+
+.footer-container li a::after {
+    content: "-";
+    color: var(--main-lighter-grey);
+    cursor: default;
+    padding-left: 10px;
+}
+
+.footer-container li:last-child a::after {
+    content: "";
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent; 
+}
+
+::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #888; 
+} 

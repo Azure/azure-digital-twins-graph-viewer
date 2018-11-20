@@ -1,0 +1,48 @@
+{
+    "Name": "Contoso Corporation",
+    "Description": "This is the root node for tenant",
+    "Type": "Tenant",
+    "Status": "Active",
+    "Children": [
+      {
+        "Name": "Headquarters",
+        "Description": "Our company's main building",
+        "FriendlyName": "Headquarters",
+        "Type": "Venue",
+        "Children": [
+            {
+            "Name": "Floor 1",
+            "Description": "Floor 1",
+            "FriendlyName": "Floor 1",
+            "Type": "Floor",
+            "Children": [
+            {
+                "Name": "Conf Room 1",
+                "Description": "Conf Room 1",
+                "FriendlyName": "Conf Room 1",
+                "Type": "Area"
+            },
+            {
+                "Name": "Conf Room 2",
+                "Description": "Conf Room 2",
+                "FriendlyName": "Conf Room 2",
+                "Type": "Area"
+            },
+            {
+                "Name": "Conf Room 3",
+                "Description": "Conf Room 2",
+                "FriendlyName": "Conf Room 2",
+                "Type": "Area"
+            }
+            ]
+        },
+        {
+            "Name": "Floor 2",
+            "Description": "Floor 2",
+            "FriendlyName": "Floor 2",
+            "Type": "Floor"
+        }
+        ]
+      }
+    ]
+  }

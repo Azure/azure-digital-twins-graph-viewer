@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <title>Azure Digital Twins Visualizer</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Stylesheets requirements -->
+    <link rel="stylesheet" href="style.css" />
+
+    <script type="text/javascript">
+        // This is the URL of your DigitalTwins instance. It can be found in the Azure portal after deployment
+        var twinsInstanceRoot = "https://[instancename].[region].azuresmartspaces.net/";
+
+        // This is the URI of your Azure Active Directory tenant.
+        var tenant = "contoso.onmicrosoft.com"; 
+
+        // This is the id of the application you've set up for DigitalTwins access:
+        var clientId = "00000000-0000-0000-0000-000000000000";
+
+    </script>
+
+    <!-- Script requirements -->
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js'></script>
+    <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.0/js/adal.min.js"></script>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="scripts/login.js"></script>
+    <script src="scripts/infopanel.js"></script>
+    <script src="scripts/graph.js"></script>
+    <script src="scripts/spaces.js"></script>
+    <script type="text/javascript">
+
+        $(function () {
+
+            // Let's login the user
+            authenticate();
+            
+            // If the user is logged in, let make sure we set everything.
+            if (user) {
+                // Hide the welcome message and show the visualizer div that holds the visualization.
+                $("#notSignedInMessage").hide();
+                $("#visualizer").show();
+                $("#graphZoomSlider").show();
+                // Update the login container info
+                $("#loginContainer")
+                    .addClass("signed-in")
+                    .append("<ul id=\"loginMenu\"><li id=\"signOut\">Sign Out</li></ul>")
+                    .click(function() {
+                        $("#loginContainer").toggleClass("selected");
+                        $("#loginMenu").toggle();
+                    });
+                $("#username")
+                    .text(user.profile.name);
+                $("#signOut").click(function () { logout(); });
+
+                // Toggle for the drop down down Show menu
+                $("#showNodesButton").click(function() {
+                    $(this).toggleClass("selected").find("ul").toggle();
+                });
+                
+                // Refresh the data if the refresh button is clicked.
+                $("#refreshButton").click(function () { refreshData(); });
+
+                // Hide the info panel when the close button is clicked.
+                $("#infoCloseButton").click(function () { 
+                    hideInfoPanel(); });
+
+                // Show sub-menu actions. 
+                $("#showSubMenu > li").click(function() {
+                    if ($(this).hasClass("selected")) {
+                        $(this).removeClass("selected").nextAll().removeClass("selected");
+                    } else {
+                        $(this).addClass("selected").prevAll().addClass("selected");
+                    }
+                    showObjectTypes();
+                });
+
+                // Refresh the data for the initial load.
+                refreshData();
+            } else {
+                // Hide the visualizer section
+                $("#visualizer").hide();
+                // Login the user.
+                $("#loginContainer").click(function() { login(); });
+            }
+
+            // Hide the alert when clicked.
+            $("#alert").click(function() {
+                $("#alert").toggleClass("show");
+            })
+
+        });
+
+    </script>
+
+
+</head>
+<body>
+    <header class="top-header">
+        <div class="top-header-container">
+            <a href="#" class="top-header-logo" aria-label="Logo">
+                <img src="https://img-prod-cms-rt-microsoft-com.akamaized.net/cms/api/am/imageFileData/RE1MmB8?ver=6c43g" alt="Placeholder with grey background and dimension watermark without any imagery">
+            </a>
+            <h1>Azure Digital Twins Visualizer</h1>
+            <div class="top-header-login" id="loginContainer">
+                <div>
+                    <picture role="img" aria-label="Microsoft profile picture">
+                    </picture>
+                </div>
+                <div>
+                    <h5 id="username">Sign In</h5>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main class="main-area">    
+        <!-- Alert DIV placeholder. -->
+        <div id="alert" class="error">
+            <h2>Error</h2>
+            <p>Looks like something went wrong.</p>
+        </div>
+
+        <section id="notSignedInMessage" class="welcome">
+            <!-- Message when not signed in -->
+            <div>
+                <h1 class="icon"></h1>
+                <h1>You are not signed in.</h1>
+                <h3>Please sign in first so we can load the data.</h3>
+            </div>
+        </section>
+
+        <!-- Main Visualizer stuff -->
+        <section id="visualizer" class="visualizer">
+            <div class="graph-container">
+                <nav>
+                    <!-- Breadcrumb to be populated once a node is selected -->
+                    <ol id="breadCrumbList" class="breadcrumb">
+                    </ol>
+    
+                    <!-- Action Menu -->
+                    <ul class="action-menu">
+                        <li id="showNodesButton" class="show">Show
+                            <ul id="showSubMenu" class="showSubMenu">
+                                <li class="selected"><span class="space">Spaces</span></li>
+                                <li><span class="device">Devices</span></li>
+                                <li><span class="sensor">Sensors</span></li>
+                            </ul>
+                        </li>
+                        <li id="refreshButton" class="refresh">Refresh</li>
+                    </ul>                
+                </nav>
+
+                <!-- Container that will hold the graph -->
+                <div id="graphContent" class="graph-canvas">
+                    <!-- Loading icon when graph is loading. -->    
+                    <img src="images/ajax-loader.gif" id="visualizerLoaderIcon" class="loaderIcon" style="display: none;" />
+                </div>
+            </div>
+
+            <!-- Info panel that provides more info on the selected node -->
+            <div id="infoPanel" class="visualizer-drawer">
+                <h2 class="space">Device</h2>
+                <span class="visualizer-drawer-close" id="infoCloseButton"></span>
+
+                <div id="infoPanelContent" class="visualizer-drawer-content">
+                    <!--Here we will generate tables with all the info-->
+                    <img src="images/ajax-loader.gif" id="panelLoaderIcon" class="loaderIcon" style="display: none;" />         
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">        
+        <div class="footer-container">
+            <ol>
+                <li><a href="https://www.azure.com">Azure</a></li>
+                <li><a href="https://azure.microsoft.com/services/digital-twins/">Digital Twins</a></li>
+                <li><a href="#">GitHub</a></li>
+            </ol>
+
+            <!-- Zoom slider -->
+            <div id="graphZoomSlider" class="zoom-slider-container" style="display: none;">
+                <input type="range" class="zoom-slider" id="zoomSlider"></button>
+            </div>
+
+        </div>
+    </footer>
+
+</body>
+</html>
