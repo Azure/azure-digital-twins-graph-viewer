@@ -45,6 +45,9 @@ After deploying, you should be able to navigate to your deployment and sign in t
 <img src="media/screenshot.png" width="800px" />
 
 
+## Known Limitations
+During the public preview of Azure Digital Twins, certain service limits are in place. These are described in the [documentation](https://docs.microsoft.com/en-us/azure/digital-twins/concepts-service-limits). One of these limits is that the API calls to the /devices, /spaces and  /sensors endpoints will not return more than 1000 objects. In the graph viewer, objects over that limit will not be returned. Future versions will handle this based on the limits on Digital Twins at GA time.
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a

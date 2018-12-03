@@ -1,4 +1,7 @@
-﻿var endpoints = {};
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
+var endpoints = {};
 // No need to change this value, it belongs to the Azure DigitalTwins service
 endpoints[twinsInstanceRoot] = "0b07f429-9f4b-4714-9392-cc5e8e80c8b0";
 
@@ -32,7 +35,16 @@ function authenticate() {
         $("#errorMessage").text(loginError);
     }
     user = authContext.getCachedUser();
-
+    // Doing this here, so it's already in the token cache when the 3 simultaneous ajax calls go out:
+    var resource = authContext.getResourceForEndpoint(baseUrl);
+    authContext.acquireToken(resource, function(error, token) { 
+        if(error || !token){
+            handleTokenError(error);
+        }
+        else {
+            console.log("Succesfully retrieved token")} 
+        }
+    );
 }
 
 function handleTokenError(error) {
@@ -44,12 +56,13 @@ function handleTokenError(error) {
     }
     else if (error.startsWith("AADSTS50058")) {
         // A user appeared to be logged in but is not. Set the UI to signed out mode.
-        console.log("A silent sign-in request was sent but no user is signed in. Logging out.");
-        $("#loginButton").show();
-        $("#logoutButton").hide();
-        $("#helloMessage").hide();
-        $("#refreshButton").hide();
-        $("#loaderIcon").hide();
+        console.log("A silent sign-in request was sent but no user is signed in. Setting UI to logged out state.");
+        $("#notSignedInMessage").show();
+        $("#loginContainer").removeClass("signed-in");
+        $("#loginContainer").click(function(){login();});
+        $("#visualizer").hide();
+        $("#graphLoaderIcon").hide();
+        $("#username").text("Sign in");
     }
     else {
         console.log("Other token error: " + error);
