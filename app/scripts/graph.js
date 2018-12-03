@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 /*
 Copyright (c) 2013-2016, Rob Schmuecker
 All rights reserved.
@@ -33,15 +36,14 @@ var treeData, tree, root;
 var nodeWidth = 180;
 var nodeHeight = 26;
 // variable for more info on the node
-var selectedNode, selectedDomNode;
-// variables for drag/drop
-var targetNode, draggingNode;
+var selectedNode, targetNode, draggingNode;
 // panning variables
 var panSpeed = 200;
 var panBoundary = 20; // Within 20px from edges will pan when dragging.
 // Misc. variables
 var i = 0;
 var animationDuration = 750;
+var recursiveCounter = 0;
 
 // size of the diagram and basic variables for the SVG elements.
 var viewerWidth, viewerHeight;
@@ -62,7 +64,7 @@ var diagonal = d3.svg.diagonal()
 //Initialization function to be called when data is refreshed.
 function initializeGraphVisualizer(data) {
     treeData = data;
-    selectedNode, selectedDomNode, targetNode, draggingNode = null;
+    selectedNode, targetNode, draggingNode = null;
     // size of the diagram
     viewerWidth = $("#graphContent").width();
     viewerHeight = $("#graphContent").height();
@@ -96,6 +98,15 @@ function initializeGraphVisualizer(data) {
             .attr("height", nodeHeight)
             .attr('y', (nodeHeight/2) * -1)
             .attr("x", nodeHeight+5+(nodeWidth/2) * -1);
+
+    svgDefs.append("clipPath")
+        .attr("id", "nodeClipPathLarge").append("rect")
+        .attr("width", nodeWidth+50)
+        .attr("height", nodeHeight)
+        .attr('y', (nodeHeight/2) * -1)
+        .attr('x', (nodeWidth/2) * -1)
+        .attr("rx", 3)
+        .attr("ry", 3);
 
     // Create the filter for drop shadow
     var shadow = svgDefs.append("filter")
@@ -162,14 +173,29 @@ function initializeGraphVisualizer(data) {
     showObjectTypes();
 }
 
+// Helper recursive function that get's all the children of a node.
+// Returns a flat array
+function getChildren(parent, returnArr) {
+    recursiveCounter++;
+    var children = (parent.children || (parent.children = [])).concat((parent._children || (parent._children = [])));
+    if (children.length) {
+        children.forEach(function (child) {
+            returnArr.push(child);
+            getChildren(child, returnArr);
+        })
+    }
+    recursiveCounter--;
+    if (recursiveCounter == 0) {
+        return returnArr;
+    }
+}
+
 // Recursive function to collapse or expand all nodes of a certain type.
-var recursiveCounter = 0;
 function updateChildren(parent, types) {
     recursiveCounter++;
     if (!parent) return;
     // Let's first get all the child nodes (both hidden and visible) and reset the child count.
     var children = (parent.children || (parent.children = [])).concat((parent._children || (parent._children = [])));
-    parent.childCount = 0;
     if (children.length) {
         // We clear out all the children of the parent so we can add them later to the correct group.
         parent.children = [];
@@ -181,7 +207,6 @@ function updateChildren(parent, types) {
             } else {
                 parent._children.push(child);
             }
-            parent.childCount++;
             // Run the same function for every child.
             updateChildren(child, types);
         });
@@ -233,8 +258,78 @@ function collapseClicked(d) {
 // Function to sort the tree.
 function sortTree() {
     tree.sort(function (a, b) {
-        return b.name.toLowerCase() < a.name.toLowerCase() ? 1 : -1;
+        return b.label.toLowerCase() < a.label.toLowerCase() ? 1 : -1;
     });
+}
+
+// Adding a new node to the graph
+function addNodeToGraph(node) {
+    // We first need to find the parent of the new node, so we know where we can add it.
+    findParent(treeData);
+
+    function findParent(parent) {
+        if (!parent) return;
+        // Let's first get all the child nodes (both hidden and visible) and reset the child count.
+        var children = (parent.children || (parent.children = [])).concat((parent._children || (parent._children = [])));
+        if (children.length) {                
+            children.forEach(function(child) {
+                // Check if this is the parent of the new node
+                if (node.parentSpaceId == child.id) {
+                    // Add it to the model.
+                    (child.children || (child.children = [])).push(node);
+                    child.childCount++;
+                    sortTree();
+                    // Call update of the graph to have the new node added.
+                    updateGraphVisualizer(child, true);
+                    // Let's select our new node.
+                    selectNode(node, false);
+                    return;
+                } else {
+                    // This is not the parent, so let's rerun this function for the child.
+                    findParent(child);
+                }
+            });
+        }
+    }
+}
+
+// Update the nodes for the graph with new data.
+function updateNodeInGraph(node, data) {
+    $.each(data, function(k,v) {
+        node[k] = v;
+    })
+    var domNode = d3.select('[id="'+node.id+'"]');
+    domNode.select("text.nodeText").text(node.label);
+    showInfoPanel(node);
+}
+
+// Removing a node from the graph after a delete.
+function removeNodeFromGraph(node) {
+    // Remove the domNode
+    var domNode = d3.select('[id="'+node.id+'"]');
+    domNode.select("g.scaler").transition().duration(300).attr("transform", "scale(0)").remove();
+
+    // Remove it's children.
+    var children = getChildren(node, []);
+    if (children.length) {
+        children.forEach(function(child) {
+            var childDomNode = d3.select('[id="'+child.id+'"]');
+            childDomNode.select("g.scaler").transition().duration(300).attr("transform", "scale(0)").remove();
+        })
+    }
+
+    // Remove from the model.
+    var index = node.parent.children.indexOf(node);
+    if (index > -1) {
+        node.parent.children.splice(index, 1);
+        node.parent.childCount--;
+    }
+
+    // Update everything.
+    if (selectedNode == node) deselectNode(node, true);
+    updateGraphVisualizer(node.parent, true);
+    hideInfoPanel();
+    centerNode(node.parent, true);
 }
 
 // This function will redraw the graph.
@@ -296,6 +391,12 @@ function updateGraphVisualizer(source, animated) {
         .attr('x', (nodeWidth/2) * -1)
         .on("click", function (d) {
             nodeClicked(d, this.parentNode);
+        })
+        .on("mouseover", function(d) {
+            nodeMouseOver(d);
+        })
+        .on("mouseout", function(d) {
+            nodeMouseOut(d);
         });
     
     nodeContainer.append("rect")
@@ -317,16 +418,12 @@ function updateGraphVisualizer(source, animated) {
         .attr("pointer-events", "none")
         .text(function (d) {
             switch (d.type) {
-                case "space":
-                    return "";
-                case "device":
-                    return "";
-                case "sensor":
-                    return "";
-                default:
-                    return "";
+                case "space": return "";
+                case "device": return "";
+                case "sensor": return "";
+                default: return "";
             }
-        });
+        })
 
     nodeContainer.append("text")
         .attr("x", nodeHeight+5+(nodeWidth/2) * -1)
@@ -334,7 +431,9 @@ function updateGraphVisualizer(source, animated) {
         .attr('class', 'nodeText')
         .attr("width", nodeWidth)
         .attr("text-anchor", "start")
-        .text(function (d) { return d.name; })
+        .text(function (d) { 
+            return d.label;
+         })
         .attr("style", "clip-path: url(#nodeTextClipPath);")
         .attr("pointer-events", "none");
 
@@ -453,46 +552,65 @@ function updateGraphVisualizer(source, animated) {
     });
 }
 
+function nodeMouseOver(d) {
+    var domNode = d3.select('[id="'+d.id+'"]');
+    /* domNode.select(".nodeContainer")
+        .transition()
+        .duration(250)
+        .attr("width", nodeWidth+50);
+    domNode.select("g.scaler")
+        .attr("style", "clip-path: url(#nodeClipPathLarge);");
+    domNode.select("g.nodeCollapse")
+        .transition()
+        .duration(250)
+        .attr("transform", "translate(50,0)"); */
+}
+
+function nodeMouseOut(d) {
+    var domNode = d3.select('[id="'+d.id+'"]');
+    /* domNode.select(".nodeContainer")
+        .transition()
+        .duration(250)
+        .attr("width", nodeWidth)
+        .each("end", function() {
+            domNode.select("g.scaler").attr("style", "clip-path: url(#nodeClipPath);");
+        });
+    domNode.select("g.nodeCollapse")
+        .transition()
+        .duration(250)
+        .attr("transform", "translate(0,0)"); */
+}
+
 // Center node and show info panel when node is clicked
-function nodeClicked(d, domNode) {
+function nodeClicked(d) {
     if (d3.event.defaultPrevented) return; // click suppressed
-
-    // if there is no node already selected, just select this one.
-    if (!selectedNode) {
-        selectNode(d, domNode);
-        return;
-    }
     
-    // if the current selected node is clicked, deselect it.
+    // if the current selected node is clicked, deselect it. Otherwise just select the new node.
     if (selectedNode && d == selectedNode) {
-        deselectNode(selectedNode, selectedDomNode);
+        deselectNode(selectedNode, true);
         return;
-    }
-
-    // if a different node is selected, deselect the old and select the new
-    if (selectedNode && d != selectedNode) {
-        deselectNode(selectedNode, selectedDomNode);
-        selectNode(d, domNode);
-        return;
+    } else {
+        selectNode(d, true);
     }
 }
 
 // Select this node.
-function selectNode(d, domNode) {
+function selectNode(d, animated) {
+    deselectNode(selectedNode, true);
     centerNode(d, true);
     showInfoPanel(d);
     populateBreadCrumb(d);
-    d3.select(domNode).select("rect.nodeIndicator").transition().duration(400).attr("width", nodeWidth);
+    var duration = animated ? 400 : 0;
+    d3.select('[id="'+d.id+'"]').select("rect.nodeIndicator").transition().duration(duration).attr("width", nodeWidth);
     selectedNode = d;
-    selectedDomNode = domNode;
 }
 
 // Deselect the node.
-function deselectNode(d, domNode) {
-    hideInfoPanel();
-    d3.select(domNode).select("rect.nodeIndicator").transition().duration(400).attr("width", nodeHeight);
+function deselectNode(d, animated) {
+    if (!d) return;
+    var duration = animated ? 400 : 0;
+    d3.select('[id="'+d.id+'"]').select("rect.nodeIndicator").transition().duration(duration).attr("width", nodeHeight);
     selectedNode = null;
-    selectedDomNode = null;
 }
 
 // Function that will populate the breadcrumb
@@ -500,7 +618,7 @@ function populateBreadCrumb(d) {
     $("#breadCrumbList").empty();
     cycle(d);
     function cycle(d) {
-        $("#breadCrumbList").prepend("<li><a>"+ d.name +"</a></li>");
+        $("#breadCrumbList").prepend("<li><a>"+ d.label +"</a></li>");
         if (d.parent) {
             cycle(d.parent);
         }

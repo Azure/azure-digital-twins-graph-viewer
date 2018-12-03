@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿<!-- Copyright (c) Microsoft Corporation. All rights reserved. -->
+<!-- Licensed under the MIT license. -->
+<!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
     <title>Azure Digital Twins Graph Viewer</title>
@@ -63,8 +65,20 @@
                 $("#refreshButton").click(function () { refreshData(); });
 
                 // Hide the info panel when the close button is clicked.
-                $("#infoCloseButton").click(function () { 
-                    hideInfoPanel(); });
+                $("#infoCloseButton").click(function () { hideInfoPanel(); });
+                
+                $("#objectAddButton").click(function() { showAddObjectForm(selectedNode, "space"); });
+                $("#objectEditButton").click(function() { showEditObjectForm(selectedNode); });
+                $("#objectDeleteButton").click(function() { showDeleteObjectForm(selectedNode); });
+
+                $("form").submit(function(e) { 
+                    e.preventDefault();
+                    submitObjectForm($(this));
+                })
+
+                $("input[type='reset']").click(function() {
+                    hideObjectForm();
+                });
 
                 // Show sub-menu actions. 
                 $("#showSubMenu > li").click(function() {
@@ -76,8 +90,14 @@
                     showObjectTypes();
                 });
 
+
                 // Refresh the data for the initial load.
-                refreshData();
+                // This is a workaround to make sure the loading of data happens only after the ADAL redirects.
+                // There has to be a better solution... :)
+                setTimeout(function () { 
+                    refreshData();
+                }, 2500);
+
             } else {
                 // Hide the visualizer section
                 $("#visualizer").hide();
@@ -116,9 +136,9 @@
     </header>
     <main class="main-area">    
         <!-- Alert DIV placeholder. -->
-        <div id="alert" class="error">
+        <div id="alert">
             <h2>Error</h2>
-            <p>Looks like something went wrong.</p>
+            <p>Error Message.</p>
         </div>
 
         <section id="notSignedInMessage" class="welcome">
@@ -154,20 +174,64 @@
                 <!-- Container that will hold the graph -->
                 <div id="graphContent" class="graph-canvas">
                     <!-- Loading icon when graph is loading. -->    
-                    <img src="images/ajax-loader.gif" id="visualizerLoaderIcon" class="loaderIcon" style="display: none;" />
+                    <img src="images/ajax-loader.gif" id="graphLoaderIcon" class="loaderIcon" style="display: none;" />
                 </div>
             </div>
 
             <!-- Info panel that provides more info on the selected node -->
-            <div id="infoPanel" class="visualizer-drawer">
-                <h2 class="space">Device</h2>
-                <span class="visualizer-drawer-close" id="infoCloseButton"></span>
+            <aside id="infoPanel" class="drawer">
+                <img src="images/ajax-loader.gif" id="panelLoaderIcon" class="loaderIcon" style="display: none;" />
+                <header>
+                    <h2 class="space">Device</h2>
+                    <span class="drawer-close" id="infoCloseButton"></span>
+                    <ul class='action-menu'>
+                        <li id='objectAddButton' class='add'>Add Child</li>
+                        <li id='objectEditButton' class='edit'>Edit</li>
+                        <li id='objectDeleteButton' class='delete'>Delete</li>
+                    </ul>
+                </header>
 
-                <div id="infoPanelContent" class="visualizer-drawer-content">
+
+                <section id="infoPanelContent" class="drawer-content">
                     <!--Here we will generate tables with all the info-->
-                    <img src="images/ajax-loader.gif" id="panelLoaderIcon" class="loaderIcon" style="display: none;" />         
-                </div>
-            </div>
+                    <div class="info"></div>
+                    <!-- Drawer for the form. -->
+                    <div id="infoPanelDrawer" class="drawer-slide-over">
+                        <form name="addObject">
+                            <h3>Add new child Space</h3>
+                            <div class="form-container">
+                                <!-- we will generate the add form here. -->
+                            </div>
+                            <div class="button-container">  
+                                <input type="submit" class="button confirm" value="Create"> 
+                                <input type="reset" class="button cancel" value="Cancel">
+                            </div>
+                        </form>
+                        <form name="editObject">
+                            <h3>Edit Object</h3>
+                            <div class="form-container">
+                                <!-- we will generate the edit form here. -->
+                            </div>
+                            <div class="button-container">
+                                <input type="submit" class="button confirm" value="Save"> 
+                                <input type="reset" class="button cancel" value="Cancel">
+                            </div>
+                        </form>
+                        <form name="deleteObject">
+                            <h3>Delete this object</h3>
+                            <p>These child objects will also be deleted:</p>
+                            <table class="collapsable">
+                                <caption onclick="$(this).parent('table').toggleClass('collapsed')">Child Objects</caption>
+                                <tbody></tbody>
+                            </table>
+                            <div class="button-container">
+                                <input type="submit" class="button confirm" value="Delete"> 
+                                <input type="reset" class="button cancel" value="Cancel">
+                            </div>
+                        </form>
+                    </div>      
+                </section>
+            </aside>
         </section>
     </main>
 
