@@ -1,6 +1,7 @@
 # Introduction
 This "Azure Digital Twins Graph Viewer" serves as a front-end to the [Azure Digital Twins](https://azure.microsoft.com/en-us/services/digital-twins/) spatial intelligence graph. It provides the following features:
 - Visualizing the relationship between spaces, devices and sensors created in the Azure Digital Twins model
+- Add, Edit and Delete Spaces and Devices
 - Changing the hierarchy by moving devices and spaces to different spaces
 - Viewing basic properties and values of nodes
 
@@ -46,7 +47,10 @@ After deploying, you should be able to navigate to your deployment and sign in t
 
 
 ## Known Limitations
+### Public Preview Limitations of max number of objects.
 During the public preview of Azure Digital Twins, certain service limits are in place. These are described in the [documentation](https://docs.microsoft.com/en-us/azure/digital-twins/concepts-service-limits). One of these limits is that the API calls to the /devices, /spaces and  /sensors endpoints will not return more than 1000 objects. In the graph viewer, objects over that limit will not be returned. Future versions will handle this based on the limits on Digital Twins at GA time.
+### Not able to add new devices and sensors
+The current version does not allow you to create a device or a sensors. Functionality for devices and sensors is limited to editting and deleting. 
 
 # Contributing
 
