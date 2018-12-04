@@ -7,6 +7,8 @@ This "Azure Digital Twins Graph Viewer" serves as a front-end to the [Azure Digi
 
 The Graph Viewer is built to be a lightweight, adaptable front-end. It uses only client-side code and as such should be easy to deploy in different environments. 
 
+<img src="media/screenshot.png" width="800px" />
+
 # Setup instructions
 
 ## Prerequisites
@@ -42,8 +44,6 @@ Upload the files you've prepared in the previous step to your webserver. For exa
 Running this locally by opening the files is not supported, since the login redirect from AzureAD would fail.
 
 After deploying, you should be able to navigate to your deployment and sign in to the Graph Viewer.
-
-<img src="media/screenshot.png" width="800px" />
 
 
 ## Known Limitations
