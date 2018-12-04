@@ -7,7 +7,7 @@ This "Azure Digital Twins Graph Viewer" serves as a front-end to the [Azure Digi
 
 The Graph Viewer is built to be a lightweight, adaptable front-end. It uses only client-side code and as such should be easy to deploy in different environments. 
 
-<img src="media/screenshot.png" width="800px" />
+<img src="media/DTGraphViewerScreenshot.png" width="800px" />
 
 # Setup instructions
 
