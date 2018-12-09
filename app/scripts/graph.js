@@ -1,6 +1,3 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT license.
-
 /*
 Copyright (c) 2013-2016, Rob Schmuecker
 All rights reserved.
@@ -51,8 +48,8 @@ var baseSVG, svgGroup, zoomSlider;
 
 // define a d3 diagonal projection for use by the node paths later on.
 var diagonal = d3.svg.diagonal()
-    .source(function(d) {  
-        return {"x":d.source.x, "y":d.source.y+(nodeWidth/2)}; 
+    .source(function(d) {
+        return {"x":d.source.x, "y":d.source.y+(nodeWidth/2)};
     })
     .target(function(d) {
         return {"x":d.target.x, "y":d.target.y-(nodeWidth/2)}
@@ -80,7 +77,7 @@ function initializeGraphVisualizer(data) {
 
     // Create the defs that will hold clipping and shadow paths.
     var svgDefs = baseSvg.append("defs")
-    
+
     // Create a clippath for the clipping of the nodes so they will have rounded corners
     svgDefs.append("clipPath")
         .attr("id", "nodeClipPath").append("rect")
@@ -138,7 +135,7 @@ function initializeGraphVisualizer(data) {
 
     // Append a group which holds all nodes and which the zoom Listener can act upon.
     svgGroup = baseSvg.append("g");
-    
+
     // Set the zoom slider and on input change the zoomListener.
     zoomSlider = d3.select("#zoomSlider")
     .attr("min", zoomListener.scaleExtent()[0])
@@ -219,11 +216,11 @@ function updateChildren(parent, types) {
     }
 }
 
-// Function that will check which objects types should be collapsed.. 
+// Function that will check which objects types should be collapsed..
 function showObjectTypes() {
     var objectTypesToShow = [];
-    $("#showSubMenu").find("li.selected > span").each(function() { 
-            objectTypesToShow.push($(this).attr("class")); 
+    $("#showSubMenu").find("li.selected > span").each(function() {
+            objectTypesToShow.push($(this).attr("class"));
         });
     updateChildren(treeData, objectTypesToShow);
 }
@@ -271,7 +268,7 @@ function addNodeToGraph(node) {
         if (!parent) return;
         // Let's first get all the child nodes (both hidden and visible) and reset the child count.
         var children = (parent.children || (parent.children = [])).concat((parent._children || (parent._children = [])));
-        if (children.length) {                
+        if (children.length) {
             children.forEach(function(child) {
                 // Check if this is the parent of the new node
                 if (node.parentSpaceId == child.id) {
@@ -349,7 +346,7 @@ function updateGraphVisualizer(source, animated) {
         }
     };
     childCount(0, treeData);
-    var newHeight = d3.max(levelWidth) * (nodeHeight * 2.25); // add some padding per row  
+    var newHeight = d3.max(levelWidth) * (nodeHeight * 2.25); // add some padding per row
     tree = tree.size([newHeight, viewerWidth]);
 
     // Compute the new tree layout.
@@ -377,7 +374,7 @@ function updateGraphVisualizer(source, animated) {
         .attr("transform", function (d) {
             return "translate(" + source.y0 + "," + source.x0 + ")";
         });
-       
+
     var nodeContainer = nodeEnter.append("g")
         .attr("class", "scaler")
         .attr("transform", "scale(1)")
@@ -398,7 +395,7 @@ function updateGraphVisualizer(source, animated) {
         .on("mouseout", function(d) {
             nodeMouseOut(d);
         });
-    
+
     nodeContainer.append("rect")
         .attr('class', function (d) {
             return 'nodeIndicator '+d.type;
@@ -408,11 +405,11 @@ function updateGraphVisualizer(source, animated) {
         .attr('y', (nodeHeight/2) * -1)
         .attr('x', (nodeWidth/2) * -1)
         .attr("pointer-events", "none");
-    
+
     // Add the icon for the indicator based on their type.
     nodeContainer.append("text")
         .attr("class", "nodeIndicatorType")
-        .attr("x", ((nodeWidth/2) * -1) + 5)  
+        .attr("x", ((nodeWidth/2) * -1) + 5)
         .attr("text-anchor", "start")
         .attr("y", 8)
         .attr("pointer-events", "none")
@@ -431,7 +428,7 @@ function updateGraphVisualizer(source, animated) {
         .attr('class', 'nodeText')
         .attr("width", nodeWidth)
         .attr("text-anchor", "start")
-        .text(function (d) { 
+        .text(function (d) {
             return d.label;
          })
         .attr("style", "clip-path: url(#nodeTextClipPath);")
@@ -473,7 +470,7 @@ function updateGraphVisualizer(source, animated) {
     nodeCollapse.append("rect")
         .attr("width", nodeHeight - 10)
         .attr("height", nodeHeight - 10)
-        .attr("x", ((nodeWidth/2)-nodeHeight) + 5) 
+        .attr("x", ((nodeWidth/2)-nodeHeight) + 5)
         .attr("y", ((nodeHeight/2) * -1) + 5)
         .attr("rx", 1)
         .attr("ry", 1)
@@ -584,7 +581,7 @@ function nodeMouseOut(d) {
 // Center node and show info panel when node is clicked
 function nodeClicked(d) {
     if (d3.event.defaultPrevented) return; // click suppressed
-    
+
     // if the current selected node is clicked, deselect it. Otherwise just select the new node.
     if (selectedNode && d == selectedNode) {
         deselectNode(selectedNode, true);
@@ -716,7 +713,7 @@ var dragListener = d3.behavior.drag()
                     oldParent.childCount--;
 
                     sortTree();
-                }   
+                }
 
                 // end the drag whether there was success or not
                 endDrag();
@@ -730,7 +727,7 @@ var dragListener = d3.behavior.drag()
 // Handle the UI updates when a drag starts
 function initiateDrag(d, domNode) {
     draggingNode = d;
-    
+
     // Setup everything for all the other nodes, except the one we are dragging.
     d3.selectAll(".node")
         .filter(function(d) {
@@ -756,7 +753,7 @@ function initiateDrag(d, domNode) {
             d3.select(domNode).select("g.addIndicator").attr("class", "addIndicator");
         });
 
-    
+
     // Setup everything for the dragging node..
     d3.select(domNode).attr('pointer-events', 'none')
         .attr('class', 'node activeDrag')
