@@ -53,6 +53,28 @@ function getDigitalTwinsObject(id, type, fComplete) {
 
 }
 
+function getSpacesForFloor(floorId, token) {
+    var url = baseUrl + "api/v1.0/";
+    url = url + "spaces?useParentSpace=true&spaceId=" + floorId;
+    return $.ajax({
+        type: "GET",
+        xhrFields: {
+            withCredentials: true
+        },
+        headers: { "Authorization": 'Bearer ' + token },
+        url: url
+    }).success(function (data) {
+        $.each(data, function (k, v) {
+            // Add some extra properties we will need to display it correct in the graph viewer.
+            var node = extendNodeProperties(v, "space");
+            // We need a single flat array with all the objects, so we add them to the stagedNodes array.
+            stagedNodes.push(node);
+        });
+    }).error(function (err) {
+        console.log("Error acquiring token: "+err);
+    });
+}
+
 // Get all the objects of a certain type and add them to the staged nodes var.
 // This function is called to load the whole model.
 function getDigitalTwinsObjects(type, fComplete) {
@@ -69,8 +91,32 @@ function getDigitalTwinsObjects(type, fComplete) {
             var url = baseUrl + "api/v1.0/";
             switch (type) {
                 case "space":
-                    url = url + "spaces?$top=999";
-                    break;
+                    url = url + "spaces?includes=types&maxlevel=3";
+                    $.ajax({
+                        type: "GET",
+                        xhrFields: {
+                            withCredentials: true
+                        },
+                        headers: { "Authorization": 'Bearer ' + token },
+                        url: url
+                    }).success(function (data) {
+                        var calls = [];
+                        $.each(data, function (k, v) {
+                            // Add some extra properties we will need to display it correct in the graph viewer.
+                            var node = extendNodeProperties(v, type);
+                            // We need a single flat array with all the objects, so we add them to the stagedNodes array.
+                            stagedNodes.push(node);
+                            if(v['type'] === "Floor"){
+                                calls.push(getSpacesForFloor(v['id'], token));
+                            }
+                        });
+                        $.when(...calls).then(function(){
+                            fComplete(data);
+                        });
+                    }).error(function (err) {
+                        console.log("Error acquiring token: "+err);
+                    });
+                    return;
                 case "device":
                     url = url + "devices?$top=999";
                     break;
