@@ -9,7 +9,7 @@ var objectTypesToLoad = ["space", "device", "sensor"];
 
 // Get a single Digital Twin Object
 function getDigitalTwinsObject(id, type, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
     authContext.acquireToken(
         resource,
         function (error, token) {
@@ -19,7 +19,7 @@ function getDigitalTwinsObject(id, type, fComplete) {
             }
 
             // Let's create the correct API url.
-            var url = baseUrl + "api/v1.0/";
+            var url = getBaseUrl() + "api/v1.0/";
             switch (type) {
                 case "space":
                     url = url + "spaces/" + id + "?includes=properties,types,values,fullPath";
@@ -53,32 +53,71 @@ function getDigitalTwinsObject(id, type, fComplete) {
 
 }
 
-function getSpacesForFloor(floorId, token) {
-    var url = baseUrl + "api/v1.0/";
-    url = url + "spaces?useParentSpace=true&spaceId=" + floorId;
-    return $.ajax({
+function getDescendantSpacesForParent(parentSpaceId, token) {
+    var url = getBaseUrl() + "api/v1.0/";
+    url = url + "spaces?traverse=down&spaceId=" + parentSpaceId;
+    return fetchAjax({
         type: "GET",
         xhrFields: {
             withCredentials: true
         },
         headers: { "Authorization": 'Bearer ' + token },
         url: url
-    }).success(function (data) {
-        $.each(data, function (k, v) {
-            // Add some extra properties we will need to display it correct in the graph viewer.
-            var node = extendNodeProperties(v, "space");
-            // We need a single flat array with all the objects, so we add them to the stagedNodes array.
-            stagedNodes.push(node);
-        });
-    }).error(function (err) {
-        console.log("Error acquiring token: "+err);
     });
+}
+
+function getDigitalTwinsSpaces(baseUrl, token, previouslyAddedNodes, level){
+    url = baseUrl + "spaces?includes=types&maxlevel=" + level + "&minlevel=" + level;
+    return fetchAjax({
+        type: "GET",
+        xhrFields: {
+            withCredentials: true
+        },
+        headers: { "Authorization": 'Bearer ' + token },
+        url: url
+    }).then(function (data) {
+        let calls = [];
+        let nodes = [].concat(previouslyAddedNodes);
+        let currentNodes = [];
+        $.each(data, function (k, v) {
+            calls.push(getDescendantSpacesForParent(v['id'], token));
+            // Add some extra properties we will need to display it correct in the graph viewer.
+            let node = extendNodeProperties(v, "space");
+            // We don't want to add them to the full nodes list yet, as if all promises succeed,
+            // these nodes will exist in the response. Only add them if we need to go 1 level deeper
+            currentNodes.push(node);
+        });
+        return Promise.all(calls).then(function(responses){
+            $.each(responses, function(k, response){
+                $.each(response, function(k, v){
+                    let node = extendNodeProperties(v, "space");
+                    nodes.push(node);
+                });
+            });
+            return nodes;
+        }).catch(function(err){
+            console.log("Error requesting child spaces for level " + level + " : " + err);
+            if (didResultExceedLimit(err)){
+                return getDigitalTwinsSpaces(baseUrl, token, nodes.concat(currentNodes), level + 1);
+            }
+        });
+    })
+    .catch(function(err){
+        console.log("Error requesting spaces at level " + level + " : " + err);
+        if (didResultExceedLimit(err)){
+            return Promise.reject("Error requesting spaces at level " + level + " : " + response.errors);
+        }
+    });
+}
+
+function didResultExceedLimit(response){
+    return response.status === 400 && response.responseText.includes("Number of nodes in the result exceeds the limit");
 }
 
 // Get all the objects of a certain type and add them to the staged nodes var.
 // This function is called to load the whole model.
 function getDigitalTwinsObjects(type, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
     authContext.acquireToken(
         resource,
         function (error, token) {
@@ -88,63 +127,54 @@ function getDigitalTwinsObjects(type, fComplete) {
             }
 
             // Create the URL based on which type of object we want to get.
-            var url = baseUrl + "api/v1.0/";
+            var baseUrl = getBaseUrl() + "api/v1.0/";
             switch (type) {
                 case "space":
-                    url = url + "spaces?includes=types&maxlevel=3";
-                    $.ajax({
-                        type: "GET",
-                        xhrFields: {
-                            withCredentials: true
-                        },
-                        headers: { "Authorization": 'Bearer ' + token },
-                        url: url
-                    }).success(function (data) {
-                        var calls = [];
-                        $.each(data, function (k, v) {
-                            // Add some extra properties we will need to display it correct in the graph viewer.
-                            var node = extendNodeProperties(v, type);
-                            // We need a single flat array with all the objects, so we add them to the stagedNodes array.
-                            stagedNodes.push(node);
-                            if(v['type'] === "Floor"){
-                                calls.push(getSpacesForFloor(v['id'], token));
-                            }
-                        });
-                        $.when(...calls).then(function(){
-                            fComplete(data);
-                        });
-                    }).error(function (err) {
-                        console.log("Error acquiring token: "+err);
-                    });
-                    return;
+                    url = baseUrl + "spaces";
+                    break;
                 case "device":
-                    url = url + "devices?$top=999";
+                    url = baseUrl + "devices?$top=999";
                     break;
                 case "sensor":
-                    url = url + "sensors?$top=999";
+                    url = baseUrl + "sensors?$top=999";
                     break;
                 default:
                     return;
             }
             
             // Make the API call.
-            $.ajax({
+            fetchAjax({
                 type: "GET",
                 xhrFields: {
                     withCredentials: true
                 },
                 headers: { "Authorization": 'Bearer ' + token },
                 url: url
-            }).success(function (data) {
+            }).then(function (data) {
                 $.each(data, function (k, v) {
                     // Add some extra properties we will need to display it correct in the graph viewer.
                     var node = extendNodeProperties(v, type);
                     // We need a single flat array with all the objects, so we add them to the stagedNodes array.
                     stagedNodes.push(node);
                 });
-                fComplete(data);
-            }).error(function (err) {
-                console.log("Error acquiring token: "+err);
+                fComplete();
+            }).catch(function (err) {
+                console.log("Error acquiring objects for root: " + err);
+                if (type === "space" && didResultExceedLimit(err)){
+                    getDigitalTwinsSpaces(baseUrl, token, [], 1)
+                    .then(function (nodes){
+                        $.each(nodes, function(k, node){
+                            stagedNodes.push(node);
+                        });
+                        console.log("successfully loaded spaces: " + nodes.length);
+                        fComplete();
+                    })
+                    .catch(function(err){
+                        var msg = "Failed to split up spaces by level and retrieve: " + err;
+                        console.log(msg);
+                        return Promise.reject("Failed to split up spaces by level and retrieve: " + err);
+                    });
+                }
             });
         }
     );
@@ -174,7 +204,7 @@ function extendNodeProperties(node, type) {
 // Get all the objects of a certain type and add them to the staged nodes var.
 // This function is called to load the whole model.
 function getDigitalTwinsTypes(categories, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
     authContext.acquireToken(
         resource,
         function (error, token) {
@@ -184,7 +214,7 @@ function getDigitalTwinsTypes(categories, fComplete) {
             }
 
             // Create the URL based on which type of object we want to get.
-            var url = baseUrl + "api/v1.0/types?disabled=false&categories="+categories.join();
+            var url = getBaseUrl() + "api/v1.0/types?disabled=false&categories="+categories.join();
             
             // Make the API call.
             $.ajax({
@@ -205,7 +235,7 @@ function getDigitalTwinsTypes(categories, fComplete) {
 
 // Create a new Digital Twins Object
 function postDigitalTwinsObject(objectType, jsonData, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
 
     authContext.acquireToken(
         resource,
@@ -216,7 +246,7 @@ function postDigitalTwinsObject(objectType, jsonData, fComplete) {
             }
 
             // Create the URL based on which type of object we want to get.
-            var url = baseUrl + "api/v1.0/";
+            var url = getBaseUrl() + "api/v1.0/";
             switch (objectType) {
                 case "space":
                     url = url + "spaces";
@@ -243,7 +273,7 @@ function postDigitalTwinsObject(objectType, jsonData, fComplete) {
 
 // This function let's you make a patch request to the digital twins model.
 function patchDigitalTwins(objectId, objectType, jsonData, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
 
     authContext.acquireToken(
         resource,
@@ -254,7 +284,7 @@ function patchDigitalTwins(objectId, objectType, jsonData, fComplete) {
             }
 
             // Create the URL based on which type of object we want to delete.
-            var url = baseUrl + "api/v1.0/";
+            var url = getBaseUrl() + "api/v1.0/";
             switch (objectType) {
                 case "space":
                     url = url + "spaces/";
@@ -292,7 +322,7 @@ function patchDigitalTwins(objectId, objectType, jsonData, fComplete) {
 }
 
 function deleteDigitalTwinsObject(objectId, objectType, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
 
     authContext.acquireToken(
         resource,
@@ -303,7 +333,7 @@ function deleteDigitalTwinsObject(objectId, objectType, fComplete) {
             }
 
             // Create the URL based on which type of object we want to delete.
-            var url = baseUrl + "api/v1.0/";
+            var url = getBaseUrl() + "api/v1.0/";
             switch (objectType) {
                 case "space":
                     url = url + "spaces/";
@@ -391,16 +421,13 @@ function refreshData() {
 
     // We check which object types we want to load and create a seperate deffered object and http request for each.
     objectTypesToLoad.forEach(function(objectType) {
-        // Create the deferred object
-        var deferred = $.Deferred();
-        // Fire up the request
-        getDigitalTwinsObjects(objectType, function(d) { deferred.resolve(d); });
-        // Add the deffered object to the defferds array so we can check when they are all done
-        deferreds.push(deferred);
+        deferreds.push(new Promise(function(resolve, reject){
+            return getDigitalTwinsObjects(objectType, resolve);
+        }));
     });
 
     // when _all_ requests are done, start visualizing
-    $.when.apply(null, deferreds).done(function() {
+    Promise.all(deferreds).then(function(){
         if(stagedNodes.length > 0)
         {
             showGraphData(stagedNodes);
@@ -413,6 +440,9 @@ function refreshData() {
             false);
         }
         $("#graphLoaderIcon").hide();
+    })
+    .catch(function(err){
+        console.log("Error occurred trying to fetch objects for types: " + err);
     });
 }
 
