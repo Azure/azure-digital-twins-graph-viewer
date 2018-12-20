@@ -6,6 +6,9 @@ var stagedNodes = [];
 // An array that has the object types that should be loaded from Digital Twins for the graph.
 // Currently we can load space, device and sensor objects only.
 var objectTypesToLoad = ["space", "device", "sensor"];
+var oDataTop = 999;
+// Dictionary to keep track of oDataSkip count for each object type
+var oDataSkips = {}
 
 // Get a single Digital Twin Object
 function getDigitalTwinsObject(id, type, fComplete) {
@@ -24,14 +27,14 @@ function getDigitalTwinsObject(id, type, fComplete) {
                 case "space":
                     url = url + "spaces/" + id + "?includes=properties,types,values,fullPath";
                     break;
-                case "device": 
+                case "device":
                     url = url + "devices/" + id + "?includes=properties,types,fullPath";
                     break;
                 case "sensor":
                     url = url + "sensors/" + id + "?includes=properties,types,fullPath,value";
                     break;
                 default:
-                    console.log("Unknown object type: "+type);
+                    console.log("Unknown object type: " + type);
                     return;
             }
 
@@ -46,7 +49,7 @@ function getDigitalTwinsObject(id, type, fComplete) {
             }).success(function (data) {
                 fComplete(data);
             }).error(function (err) {
-                console.log("Error acquiring token: "+err);
+                console.log("Error acquiring token: " + err);
             });
         }
     );
@@ -125,59 +128,68 @@ function getDigitalTwinsObjects(type, fComplete) {
                 handleTokenError(error);
                 return;
             }
+            //Setting the initial oData Skip value for the object type to zero
+            oDataSkips[type] = 0;
 
-            // Create the URL based on which type of object we want to get.
-            var baseUrl = getBaseUrl() + "api/v1.0/";
-            switch (type) {
-                case "space":
-                    url = baseUrl + "spaces";
-                    break;
-                case "device":
-                    url = baseUrl + "devices?$top=999";
-                    break;
-                case "sensor":
-                    url = baseUrl + "sensors?$top=999";
-                    break;
-                default:
-                    return;
-            }
-            
             // Make the API call.
-            fetchAjax({
-                type: "GET",
-                xhrFields: {
-                    withCredentials: true
-                },
-                headers: { "Authorization": 'Bearer ' + token },
-                url: url
-            }).then(function (data) {
-                $.each(data, function (k, v) {
-                    // Add some extra properties we will need to display it correct in the graph viewer.
-                    var node = extendNodeProperties(v, type);
-                    // We need a single flat array with all the objects, so we add them to the stagedNodes array.
-                    stagedNodes.push(node);
-                });
-                fComplete();
-            }).catch(function (err) {
-                console.log("Error acquiring objects for root: " + err);
-                if (type === "space" && didResultExceedLimit(err)){
-                    getDigitalTwinsSpaces(baseUrl, token, [], 1)
-                    .then(function (nodes){
-                        $.each(nodes, function(k, node){
-                            stagedNodes.push(node);
-                        });
-                        console.log("successfully loaded spaces: " + nodes.length);
-                        fComplete();
-                    })
-                    .catch(function(err){
-                        var msg = "Failed to split up spaces by level and retrieve: " + err;
-                        console.log(msg);
-                        return Promise.reject("Failed to split up spaces by level and retrieve: " + err);
-                    });
-                }
-            });
+            executeDigitalTwinsRequest(token, type, fComplete);
         }
     );
+}
+
+//Execute call to retrieve Digital Twins to get all Digital Twins Object nodes, accounting for the Digital Twins limit of 1000 nodes per request
+function executeDigitalTwinsRequest(token, type, fComplete) {
+
+    $.ajax({
+        type: "GET",
+        xhrFields: {
+            withCredentials: true
+        },
+        headers: { "Authorization": 'Bearer ' + token },
+        url: getRequestUrlWithoDataSkip(type)
+    }).success(function (data) {
+
+        $.each(data, function (k, v) {
+            // Add some extra properties we will need to display it correct in the graph viewer.
+            var node = extendNodeProperties(v, type);
+            // We need a single flat array with all the objects, so we add them to the stagedNodes array.
+            stagedNodes.push(node);
+        });
+
+        //If the returned array from Digital Twins still has nodes in it, adjust the oData skip and recall the executeDigitalTwinsRequest function
+        if (data.length > 0) {
+            oDataSkips[type] = oDataSkips[type] + oDataTop;
+            executeDigitalTwinsRequest(token, type, fComplete);
+        }
+        else {
+            fComplete(data);
+        }
+
+    }).error(function (err) {
+        console.log("Error acquiring token: " + err);
+    });
+}
+
+//Generates the request url for the getDigitalTwinsObjects function
+function getRequestUrlWithoDataSkip(type) {
+
+    // Create the URL based on which type of object we want to get.
+    var url = baseUrl + "api/v1.0/";
+    switch (type) {
+        case "space":
+            url = url + "spaces" + "?$top=" + oDataTop + "&$skip=" + oDataSkips[type];
+            break;
+        case "device":
+            url = url + "devices" + "?$top=" + oDataTop + "&$skip=" + oDataSkips[type];
+            break;
+        case "sensor":
+            url = url + "sensors" + "?$top=" + oDataTop + "&$skip=" + oDataSkips[type];
+            break;
+        default:
+            return;
+    }
+
+    return url;
 }
 
 // Function that adds a couple of new properties to a node that we would need for displaying it correctly.
@@ -191,7 +203,7 @@ function extendNodeProperties(node, type) {
         case "sensor": label = node.friendlyName ? node.friendlyName : node.port; break;
         default: return;
     }
-    $.extend(node, { 
+    $.extend(node, {
         "label": label ? label : "", // Add the label
         "type": type, // Add the type to the node.
         "childCount": 0, // Set initial child count to 0;
@@ -227,7 +239,7 @@ function getDigitalTwinsTypes(categories, fComplete) {
             }).success(function (data) {
                 fComplete(data);
             }).error(function (err) {
-                console.log("Error acquiring token: "+err);
+                console.log("Error acquiring token: " + err);
             });
         }
     );
@@ -420,24 +432,25 @@ function refreshData() {
     var deferreds = [];
 
     // We check which object types we want to load and create a seperate deffered object and http request for each.
-    objectTypesToLoad.forEach(function(objectType) {
-        deferreds.push(new Promise(function(resolve, reject){
-            return getDigitalTwinsObjects(objectType, resolve);
-        }));
+    objectTypesToLoad.forEach(function (objectType) {
+        // Create the deferred object
+        var deferred = $.Deferred();
+        // Fire up the request
+        getDigitalTwinsObjects(objectType, function (d) { deferred.resolve(d); });
+        // Add the deffered object to the defferds array so we can check when they are all done
+        deferreds.push(deferred);
     });
 
     // when _all_ requests are done, start visualizing
-    Promise.all(deferreds).then(function(){
-        if(stagedNodes.length > 0)
-        {
+    $.when.apply(null, deferreds).done(function () {
+        if (stagedNodes.length > 0) {
             showGraphData(stagedNodes);
         }
-        else 
-        {
+        else {
             showAlert("error",
-            "No data loaded",
-            "No data was returned from Digital Twins. Make sure you have added at least one space and have authorization to view it.",
-            false);
+                "No data loaded",
+                "No data was returned from Digital Twins. Make sure you have added at least one space and have authorization to view it.",
+                false);
         }
         $("#graphLoaderIcon").hide();
     })
@@ -450,17 +463,17 @@ function addObject(type, data, fComplete) {
     // for now we only handle creation of spaces
     if (type != "space") return;
     // Let's make the call
-    postDigitalTwinsObject(type, JSON.stringify(data), function(xhr, status) { 
+    postDigitalTwinsObject(type, JSON.stringify(data), function (xhr, status) {
         switch (status) {
             case "success":
                 // Succesfully added.. now get the new object so we can add it to the graph.
-                getDigitalTwinsObject(xhr.responseJSON, type, function(node) {        
+                getDigitalTwinsObject(xhr.responseJSON, type, function (node) {
                     // Extend the node with some additional properties for correctly showing the in graph
                     node = extendNodeProperties(node, type);
                     // Add it to the graph
                     addNodeToGraph(node);
                     fComplete(true);
-                });   
+                });
                 break;
             default:
                 fComplete(false);
@@ -470,7 +483,7 @@ function addObject(type, data, fComplete) {
 }
 
 function updateObject(object, data, fComplete) {
-    patchDigitalTwins(object.id, object.type, JSON.stringify(data), function(status) { 
+    patchDigitalTwins(object.id, object.type, JSON.stringify(data), function (status) {
         switch (status) {
             case "nocontent":
                 // We may need to update the label if the names have changed..
@@ -481,7 +494,7 @@ function updateObject(object, data, fComplete) {
                     case "sensor": label = data.friendlyName ? data.friendlyName : data.port; break;
                     default: return;
                 }
-                $.extend(data, { 
+                $.extend(data, {
                     "label": label ? label : "" // Add the label
                 });
                 // Let's call the function to update the node in the graph.
@@ -497,9 +510,9 @@ function updateObject(object, data, fComplete) {
 
 function deleteObject(object, fComplete) {
     // Let's make the call..
-    deleteDigitalTwinsObject(object.id, object.type, function(status) { 
+    deleteDigitalTwinsObject(object.id, object.type, function (status) {
         switch (status) {
-            case "nocontent": 
+            case "nocontent":
                 removeNodeFromGraph(object);
                 fComplete(true);
                 break;
@@ -508,7 +521,7 @@ function deleteObject(object, fComplete) {
                 break;
         }
 
-     });
+    });
 }
 
 function objectDragAction(node, target, fEndDrag) {
@@ -519,10 +532,10 @@ function objectDragAction(node, target, fEndDrag) {
 
     // we cannot drag a sensor and only add something to a space.
     if (node.type == "sensor" || target.type != "space") {
-        showAlert("error", 
-            "Update failed", 
+        showAlert("error",
+            "Update failed",
             "You can't attach a " + node.type + " to a " + target.type + "."
-        ); 
+        );
         fEndDrag(false);
         return;
     }
@@ -548,23 +561,23 @@ function objectDragAction(node, target, fEndDrag) {
         // a successful patch request will give 'nocontent' as status
         switch (status) {
             case "nocontent":
-                showAlert("success", 
-                    "Success", 
-                    "<strong>"+node.name+"</strong> was succesfully moved to <strong>"+target.name+"</strong>."
+                showAlert("success",
+                    "Success",
+                    "<strong>" + node.name + "</strong> was succesfully moved to <strong>" + target.name + "</strong>."
                 );
                 fEndDrag(true);
                 break;
             default:
-                showAlert("error", 
-                    "Update failed", 
+                showAlert("error",
+                    "Update failed",
                     "You probably don't have permissions to update the model."
-                ); 
+                );
                 fEndDrag(false);
                 break;
         }
         $("#graphLoaderIcon").hide();
     });
-    
+
 }
 
 function showAlert(type, title, text) {
