@@ -56,67 +56,6 @@ function getDigitalTwinsObject(id, type, fComplete) {
 
 }
 
-function getDescendantSpacesForParent(parentSpaceId, token) {
-    var url = getBaseUrl() + "api/v1.0/";
-    url = url + "spaces?traverse=down&spaceId=" + parentSpaceId;
-    return fetchAjax({
-        type: "GET",
-        xhrFields: {
-            withCredentials: true
-        },
-        headers: { "Authorization": 'Bearer ' + token },
-        url: url
-    });
-}
-
-function getDigitalTwinsSpaces(baseUrl, token, previouslyAddedNodes, level){
-    url = baseUrl + "spaces?includes=types&maxlevel=" + level + "&minlevel=" + level;
-    return fetchAjax({
-        type: "GET",
-        xhrFields: {
-            withCredentials: true
-        },
-        headers: { "Authorization": 'Bearer ' + token },
-        url: url
-    }).then(function (data) {
-        let calls = [];
-        let nodes = [].concat(previouslyAddedNodes);
-        let currentNodes = [];
-        $.each(data, function (k, v) {
-            calls.push(getDescendantSpacesForParent(v['id'], token));
-            // Add some extra properties we will need to display it correct in the graph viewer.
-            let node = extendNodeProperties(v, "space");
-            // We don't want to add them to the full nodes list yet, as if all promises succeed,
-            // these nodes will exist in the response. Only add them if we need to go 1 level deeper
-            currentNodes.push(node);
-        });
-        return Promise.all(calls).then(function(responses){
-            $.each(responses, function(k, response){
-                $.each(response, function(k, v){
-                    let node = extendNodeProperties(v, "space");
-                    nodes.push(node);
-                });
-            });
-            return nodes;
-        }).catch(function(err){
-            console.log("Error requesting child spaces for level " + level + " : " + err);
-            if (didResultExceedLimit(err)){
-                return getDigitalTwinsSpaces(baseUrl, token, nodes.concat(currentNodes), level + 1);
-            }
-        });
-    })
-    .catch(function(err){
-        console.log("Error requesting spaces at level " + level + " : " + err);
-        if (didResultExceedLimit(err)){
-            return Promise.reject("Error requesting spaces at level " + level + " : " + response.errors);
-        }
-    });
-}
-
-function didResultExceedLimit(response){
-    return response.status === 400 && response.responseText.includes("Number of nodes in the result exceeds the limit");
-}
-
 // Get all the objects of a certain type and add them to the staged nodes var.
 // This function is called to load the whole model.
 function getDigitalTwinsObjects(type, fComplete) {
@@ -174,7 +113,7 @@ function executeDigitalTwinsRequest(token, type, fComplete) {
 function getRequestUrlWithoDataSkip(type) {
 
     // Create the URL based on which type of object we want to get.
-    var url = baseUrl + "api/v1.0/";
+    var url = getBaseUrl() + "api/v1.0/";
     switch (type) {
         case "space":
             url = url + "spaces" + "?$top=" + oDataTop + "&$skip=" + oDataSkips[type];
@@ -453,9 +392,6 @@ function refreshData() {
                 false);
         }
         $("#graphLoaderIcon").hide();
-    })
-    .catch(function(err){
-        console.log("Error occurred trying to fetch objects for types: " + err);
     });
 }
 
