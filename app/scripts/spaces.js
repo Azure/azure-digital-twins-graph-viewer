@@ -165,8 +165,8 @@ function getDigitalTwinsTypes(categories, fComplete) {
             }
 
             // Create the URL based on which type of object we want to get.
-            var url = getBaseUrl() + "api/v1.0/types?disabled=false&categories="+categories.join();
-            
+            var url = getBaseUrl() + "api/v1.0/types?disabled=false&categories=" + categories.join();
+
             // Make the API call.
             $.ajax({
                 type: "GET",
