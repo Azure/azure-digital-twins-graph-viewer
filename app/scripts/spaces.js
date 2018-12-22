@@ -223,7 +223,7 @@ function postDigitalTwinsObject(objectType, jsonData, fComplete) {
 }
 
 // This function let's you make a patch request to the digital twins model.
-function patchDigitalTwins(objectId, objectType, jsonData, fComplete) {
+function patchDigitalTwins(object, objectType, jsonData, fComplete) {
     var resource = authContext.getResourceForEndpoint(baseUrl);
 
     authContext.acquireToken(
@@ -250,7 +250,7 @@ function patchDigitalTwins(objectId, objectType, jsonData, fComplete) {
                     return;
             }
 
-            url = url + objectId;
+            url = url + object.id;
             console.log(url)
             console.log(jsonData)
 
@@ -263,13 +263,43 @@ function patchDigitalTwins(objectId, objectType, jsonData, fComplete) {
                 url: url,
                 data: jsonData,
                 contentType: "application/json"
-            }).complete(function (xhr, status) {
-                console.log(status);
-                console.log(xhr);
-                fComplete(status);
-            });
+            }).success(function () {
+
+                //If the dragged object is of type device, we will send additional patch requests to also update the parents space of the sensors of the dragged device
+                if (objectType == "device") {
+                    object._children.forEach(function (childSensor) {
+                        patchDeviceChildSensors(childSensor, jsonData, token);
+                    });
+                }
+            })
+
+                .complete(function (xhr, status) {
+                    console.log(status);
+                    console.log(xhr);
+                    fComplete(status);
+                });
         }
     );
+}
+
+//Function to update the parent space of sensors of a device 
+function patchDeviceChildSensors(childSensor, jsonData, token) {
+
+    var url = baseUrl + "api/v1.0/sensors/" + childSensor.id;
+
+    $.ajax({
+        type: "PATCH",
+        xhrFields: {
+            withCredentials: true
+        },
+        headers: { "Authorization": 'Bearer ' + token },
+        url: url,
+        data: jsonData,
+        contentType: "application/json"
+    }).error(function (err) {
+        console.log("Failed to patch ChildSensor with Id" + childSensor.id + ". Error: " + err);
+    });
+
 }
 
 function deleteDigitalTwinsObject(objectId, objectType, fComplete) {
@@ -489,7 +519,7 @@ function objectDragAction(node, target, fEndDrag) {
     // Make the call
     $("#graphLoaderIcon").show();
     var updateDigitalTwins = $.Deferred();
-    patchDigitalTwins(node.id, node.type, jsonData, function (s) { updateDigitalTwins.resolve(s); });
+    patchDigitalTwins(node, node.type, jsonData, function (s) { updateDigitalTwins.resolve(s); });
 
     // Call is done, let's see the result
     $.when(updateDigitalTwins).done(function (status) {
