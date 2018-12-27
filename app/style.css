@@ -82,6 +82,25 @@ select {
     width: 100%;
 }
 
+.list-item{
+    clear:left;
+    list-style:none;
+}
+
+div.twins-config-wrapper {
+    width: 50%;
+}
+
+section.twins-config {
+    height: 30%;
+    justify-content: center;
+    display: inline-flex;
+}
+
+label.twins-config-label {
+    width: 100%;
+}
+
 input:disabled {
     color: rgba(255,255,255,0.4);
 }

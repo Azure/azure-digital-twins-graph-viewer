@@ -12,7 +12,7 @@ var oDataSkips = {}
 
 // Get a single Digital Twin Object
 function getDigitalTwinsObject(id, type, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
     authContext.acquireToken(
         resource,
         function (error, token) {
@@ -22,7 +22,7 @@ function getDigitalTwinsObject(id, type, fComplete) {
             }
 
             // Let's create the correct API url.
-            var url = baseUrl + "api/v1.0/";
+            var url = getBaseUrl() + "api/v1.0/";
             switch (type) {
                 case "space":
                     url = url + "spaces/" + id + "?includes=properties,types,values,fullPath";
@@ -59,7 +59,7 @@ function getDigitalTwinsObject(id, type, fComplete) {
 // Get all the objects of a certain type and add them to the staged nodes var.
 // This function is called to load the whole model.
 function getDigitalTwinsObjects(type, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
     authContext.acquireToken(
         resource,
         function (error, token) {
@@ -113,7 +113,7 @@ function executeDigitalTwinsRequest(token, type, fComplete) {
 function getRequestUrlWithoDataSkip(type) {
 
     // Create the URL based on which type of object we want to get.
-    var url = baseUrl + "api/v1.0/";
+    var url = getBaseUrl() + "api/v1.0/";
     switch (type) {
         case "space":
             url = url + "spaces" + "?$top=" + oDataTop + "&$skip=" + oDataSkips[type];
@@ -155,7 +155,7 @@ function extendNodeProperties(node, type) {
 // Get all the objects of a certain type and add them to the staged nodes var.
 // This function is called to load the whole model.
 function getDigitalTwinsTypes(categories, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
     authContext.acquireToken(
         resource,
         function (error, token) {
@@ -165,7 +165,7 @@ function getDigitalTwinsTypes(categories, fComplete) {
             }
 
             // Create the URL based on which type of object we want to get.
-            var url = baseUrl + "api/v1.0/types?disabled=false&categories=" + categories.join();
+            var url = getBaseUrl() + "api/v1.0/types?disabled=false&categories=" + categories.join();
 
             // Make the API call.
             $.ajax({
@@ -186,7 +186,7 @@ function getDigitalTwinsTypes(categories, fComplete) {
 
 // Create a new Digital Twins Object
 function postDigitalTwinsObject(objectType, jsonData, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
 
     authContext.acquireToken(
         resource,
@@ -197,7 +197,7 @@ function postDigitalTwinsObject(objectType, jsonData, fComplete) {
             }
 
             // Create the URL based on which type of object we want to get.
-            var url = baseUrl + "api/v1.0/";
+            var url = getBaseUrl() + "api/v1.0/";
             switch (objectType) {
                 case "space":
                     url = url + "spaces";
@@ -224,7 +224,7 @@ function postDigitalTwinsObject(objectType, jsonData, fComplete) {
 
 // This function let's you make a patch request to the digital twins model.
 function patchDigitalTwins(objectId, objectType, jsonData, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
 
     authContext.acquireToken(
         resource,
@@ -235,7 +235,7 @@ function patchDigitalTwins(objectId, objectType, jsonData, fComplete) {
             }
 
             // Create the URL based on which type of object we want to delete.
-            var url = baseUrl + "api/v1.0/";
+            var url = getBaseUrl() + "api/v1.0/";
             switch (objectType) {
                 case "space":
                     url = url + "spaces/";
@@ -273,7 +273,7 @@ function patchDigitalTwins(objectId, objectType, jsonData, fComplete) {
 }
 
 function deleteDigitalTwinsObject(objectId, objectType, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
 
     authContext.acquireToken(
         resource,
@@ -284,7 +284,7 @@ function deleteDigitalTwinsObject(objectId, objectType, fComplete) {
             }
 
             // Create the URL based on which type of object we want to delete.
-            var url = baseUrl + "api/v1.0/";
+            var url = getBaseUrl() + "api/v1.0/";
             switch (objectType) {
                 case "space":
                     url = url + "spaces/";

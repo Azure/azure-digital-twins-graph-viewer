@@ -10,23 +10,12 @@
     <!-- Stylesheets requirements -->
     <link rel="stylesheet" href="style.css" />
 
-    <script type="text/javascript">
-        // This is the URL of your DigitalTwins instance. It can be found in the Azure portal after deployment
-        var twinsInstanceRoot = "https://[instancename].[region].azuresmartspaces.net/";
-
-        // This is the URI of your Azure Active Directory tenant.
-        var tenant = "contoso.onmicrosoft.com"; 
-
-        // This is the id of the application you've set up for DigitalTwins access:
-        var clientId = "00000000-0000-0000-0000-000000000000";
-
-    </script>
-
     <!-- Script requirements -->
     <script src="https://code.jquery.com/jquery-latest.min.js"></script>
     <script src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js'></script>
     <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.0/js/adal.min.js"></script>
     <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="scripts/storage.js"></script>
     <script src="scripts/login.js"></script>
     <script src="scripts/infopanel.js"></script>
     <script src="scripts/graph.js"></script>
@@ -34,14 +23,18 @@
     <script type="text/javascript">
 
         $(function () {
+            // try to populate inputs from config from storage
+            prepopulateInputs();
 
-            // Let's login the user
-            authenticate();
+            if(getTwinsInstanceRoot() && getTwinsTenantId() && getTwinsClientId()){
+                authenticate();
+            }
             
             // If the user is logged in, let make sure we set everything.
             if (user) {
                 // Hide the welcome message and show the visualizer div that holds the visualization.
                 $("#notSignedInMessage").hide();
+                $("#twinsConfig").hide();
                 $("#visualizer").show();
                 $("#graphZoomSlider").show();
                 // Update the login container info
@@ -112,6 +105,18 @@
 
         });
 
+        function prepopulateInputs(){
+            var state = loadSavedStateFromStorage();
+            if(state.url){
+                $("#twinsUrl").val(state.url);
+            }
+            if(state.tenantId){
+                $("#twinsTenantId").val(state.tenantId);
+            }
+            if(state.clientId){
+                $("#twinsClientId").val(state.clientId);
+            }
+        }
     </script>
 
 
@@ -146,8 +151,30 @@
             <div>
                 <h1 class="icon"></h1>
                 <h1>You are not signed in.</h1>
-                <h3>Please sign in first so we can load the data.</h3>
+                <h3>Please fill in connection information below and sign in for access.</h3>
             </div>
+        </section>
+
+        <section id="twinsConfig" class="twins-config">
+                <div id="twinsConfigWrapper" class="twins-config-wrapper">
+                        <ul>
+                            <li class="list-item" style="">
+                                <label class="twins-config-label">Azure Digital Twins Instance Root Url
+                                <input id="twinsUrl" type="text" placeholder="https://[instancename].[region].azuresmartspaces.net/"/>
+                                </label>
+                            </li>
+                            <li class="list-item" style="">
+                                <label class="twins-config-label">Tenant Id
+                                <input id="twinsTenantId" type="text" placeholder="00000000-0000-0000-0000-000000000000"/>
+                                </label>
+                            </li>
+                            <li class="list-item" style="">
+                                <label class="twins-config-label">Client Id
+                                <input id="twinsClientId" type="text" placeholder="00000000-0000-0000-0000-000000000000"/>
+                                </label>
+                            </li>
+                        </ul>
+                </div>
         </section>
 
         <!-- Main Visualizer stuff -->
