@@ -34,21 +34,19 @@ In order to connect to Azure Digital Twins, the Graph Viewer must be registered 
 
 ## Prepare files
 - Clone or download the repository files to your computer. 
-- Open index.html in your favorite editor and go to the script block at the top of the page. Update the values for the three variables:
-    - twinsInstanceRoot: This is the full URL of your Azure Digital Twins instance, ending in `azuresmartspaces.net/`.
-    - tenant: This is the name of your Azure tenant, for example `contoso.onmicrosoft.com`
-    - clientId: This is the application id of the Azure Active Directory application you created in the previous step. It is formatted as a Guid.
 
 ## Deploy
 Upload the files you've prepared in the previous step to your webserver. For example, you could create an Azure web app and deploy using FTP or VSTS. Alternatively, you could run this off a localhost webserver. Just make sure the reply-url in the AzureAD application has been set to the appropriate URL.
 Running this locally by opening the files is not supported, since the login redirect from AzureAD would fail.
 
 After deploying, you should be able to navigate to your deployment and sign in to the Graph Viewer.
+When you open the Graph Viewer webpage, enter the following information in the text boxes:
+- twinsInstanceRoot: This is the full URL of your Azure Digital Twins instance, ending in `azuresmartspaces.net/`.
+- tenant: This is the name or id of your Azure tenant, for example `contoso.onmicrosoft.com` or `6f68d89e-8f99-4798-8850-a5d557c3341e`
+- clientId: This is the application id of the Azure Active Directory application you created in the previous step. It is formatted as a Guid.
 
 
 ## Known Limitations
-### Public Preview Limitations of max number of objects.
-During the public preview of Azure Digital Twins, certain service limits are in place. These are described in the [documentation](https://docs.microsoft.com/en-us/azure/digital-twins/concepts-service-limits). One of these limits is that the API calls to the /devices, /spaces and  /sensors endpoints will not return more than 1000 objects. In the graph viewer, objects over that limit will not be returned. Future versions will handle this based on the limits on Digital Twins at GA time.
 ### Not able to add new devices and sensors
 The current version does not allow you to create a device or a sensors. Functionality for devices and sensors is limited to editting and deleting. 
 
@@ -69,4 +67,6 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 ## Contributors
 
 Joost ten Kattelaar<br />
-Niels Buit
+Niels Buit<br />
+Arjen Everaert<br />
+Jordan Beland<br />
