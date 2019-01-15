@@ -639,7 +639,7 @@ function jsonToTable(json, tableName) {
       });
       break;
     case "JSON":
-        tableBody.append("<tr><td>" + JSON.stringify(json, null,2) + "</td></tr>");
+        tableBody.append("<tr><td>" + JSON.stringify(json, undefined, 4) + "</td></tr>");
       break;
     default:
       break;
