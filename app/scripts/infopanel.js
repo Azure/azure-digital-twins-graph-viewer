@@ -2,6 +2,19 @@
 // Licensed under the MIT license.
 
 // Show the info panel with the info of the selected node.
+function showApiPanel() {
+  // Reset everything.
+  $("#apiPanelDrawer").addClass("show");
+  $("#apiPanel").addClass("open"); // Open the panel
+}
+
+// Hide the api panel
+function hideApiPanel() {
+  $("#apiPanel.open").removeClass("open");
+  $("#apiPanelDrawer.show").removeClass("show");
+}
+
+// Show the info panel with the info of the selected node.
 function showInfoPanel(d) {
   // Reset everything.
   $("#infoPanelContent > div.info").empty(); // Remove any old info
@@ -18,8 +31,13 @@ function showInfoPanel(d) {
 
   if (d.type == "space") {
     $("#infoPanel > header > ul.action-menu > li.add").show();
+    $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
   } else {
     $("#infoPanel > header > ul.action-menu > li.add").hide();
+    if (d.type == "device")
+      $("#infoPanel > header > ul.action-menu > li.addSensor").show();
+    else
+      $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
   }
 
   // Let's get all the info from the selected element by firing a new API request.
@@ -42,6 +60,7 @@ function showInfoPanel(d) {
         break;
     }
     jsonToTable(data.spacePaths, "spacePaths");
+    jsonToTable(data, "JSON");
   });
 }
 
@@ -56,7 +75,6 @@ function hideInfoPanel() {
 
 // Function that shows the Add New Object Form.
 function showAddObjectForm(parent, type) {
-  if (parent.type != "space") return;
   // Let's hide all the forms.
   $("#infoPanelDrawer form").hide();
   // Let's get the form we want to show, reset it's content and make it visible.
@@ -96,7 +114,128 @@ function showAddObjectForm(parent, type) {
           val: parent.id
         }),
         // Hidden field is needed since a disabled field is not passed when submitting.
-        $("<input />", { name: "parentSpaceId", hidden: true, val: parent.id })
+        $("<input />", { name: "parentSpaceId", hidden: true, val: parent.id }),
+        // Hidden field to pass type for submit.
+        $("<input />", { name: "type", hidden: true, val: type })
+      );
+      break;
+      case "device":
+      formContainer.append(
+        $("<label></label>", { for: "name", text: "Name:" }),
+        $("<input />", { type: "text", name: "name" }),
+        $("<label></label>", { for: "hardewareId", text: "Hardware ID:" }),
+        $("<input />", { type: "text", name: "hardwareId" }),
+        $("<label></label>", { for: "friendlyName", text: "Friendly Name:" }),
+        $("<input />", { type: "text", name: "friendlyName" }),
+        $("<label></label>", { for: "description", text: "Description:" }),
+        $("<input />", { type: "text", name: "description" }),
+        $("<label></label>", { for: "typeId", text: "Type:" }),
+        $("<select></select>", { name: "typeId", title: "DeviceType" }).append(
+          "<option>Loading...</option>"
+        ),
+        $("<label></label>", { for: "subtypeId", text: "Subtype:" }),
+        $("<select></select>", {
+          name: "subtypeId",
+          title: "DeviceSubtype"
+        }).append("<option>Loading...</option>"),
+        $("<label></label>", {
+          for: "parentSpaceId",
+          text: "Parent Space ID:"
+        }),
+        $("<input />", {
+          type: "text",
+          name: "parentSpaceIdDisabled",
+          disabled: true,
+          val: parent.id
+        }),
+        // Hidden field is needed since a disabled field is not passed when submitting.
+        $("<input />", { name: "spaceId", hidden: true, val: parent.id }),
+        // Hidden field to pass type for submit.
+        $("<input />", { name: "type", hidden: true, val: type })
+      );
+      break;
+      case "sensor":
+      formContainer.append(
+        $("<label></label>", { for: "hardewareId", text: "Hardware ID:" }),
+        $("<input />", { type: "text", name: "hardwareId" }),
+        $("<label></label>", { for: "typeId", text: "Type:" }),
+        $("<select></select>", { name: "typeId", title: "SensorType" }).append(
+          "<option>Loading...</option>"
+        ),
+        $("<label></label>", { for: "dataTypeId", text: "Data Type:" }),
+        $("<select></select>", {
+          name: "dataTypeId",
+          title: "SensorDataType"
+        }).append("<option>Loading...</option>"),
+        $("<label></label>", { for: "dataSubtypeId", text: "Data Subtype:" }),
+        $("<select></select>", {
+          name: "dataSubtypeId",
+          title: "SensorDataSubtype"
+        }).append("<option>Loading...</option>"),
+        $("<label></label>", {
+          for: "dataUnitTypeId",
+          text: "Data Unit Type:"
+        }),
+        $("<select></select>", {
+          name: "dataUnitTypeId",
+          title: "SensorDataUnitType"
+        }).append("<option>Loading...</option>"),
+        $("<label></label>", {
+          for: "parentSpaceId",
+          text: "Parent Space ID:"
+        }),
+        $("<input />", {
+          type: "text",
+          name: "parentSpaceIdDisabled",
+          disabled: true,
+          val: parent.id
+        }),
+        // Hidden field is needed since a disabled field is not passed when submitting.
+        $("<input />", { name: "deviceId", hidden: true, val: parent.id }),
+        // Hidden field to pass type for submit.
+        $("<input />", { name: "type", hidden: true, val: type })
+      );
+      break;
+      case "type":
+      formContainer.append(
+        $("<label></label>", { for: "hardewareId", text: "Hardware ID:" }),
+        $("<input />", { type: "text", name: "hardwareId" }),
+        $("<label></label>", { for: "typeId", text: "Type:" }),
+        $("<select></select>", { name: "typeId", title: "SensorType" }).append(
+          "<option>Loading...</option>"
+        ),
+        $("<label></label>", { for: "dataTypeId", text: "Data Type:" }),
+        $("<select></select>", {
+          name: "dataTypeId",
+          title: "SensorDataType"
+        }).append("<option>Loading...</option>"),
+        $("<label></label>", { for: "dataSubtypeId", text: "Data Subtype:" }),
+        $("<select></select>", {
+          name: "dataSubtypeId",
+          title: "SensorDataSubtype"
+        }).append("<option>Loading...</option>"),
+        $("<label></label>", {
+          for: "dataUnitTypeId",
+          text: "Data Unit Type:"
+        }),
+        $("<select></select>", {
+          name: "dataUnitTypeId",
+          title: "SensorDataUnitType"
+        }).append("<option>Loading...</option>"),
+        $("<label></label>", {
+          for: "parentSpaceId",
+          text: "Parent Space ID:"
+        }),
+        $("<input />", {
+          type: "text",
+          name: "parentSpaceIdDisabled",
+          disabled: true,
+          val: parent.id
+        }),
+        // Hidden field is needed since a disabled field is not passed when submitting.
+        $("<input />", { name: "deviceId", hidden: true, val: parent.id }),
+        // Hidden field to pass type for submit.
+        $("<input />", { name: "type", hidden: true, val: type })
       );
       break;
     default:
@@ -204,7 +343,7 @@ function showEditObjectForm(object) {
           type: "text",
           name: "hardwareId",
           val: "hardwareId" in object ? object.hardwareId : ""
-        }),
+        }), 
         $("<label></label>", { for: "gatewayId", text: "Gateway ID:" }),
         $("<input />", {
           type: "text",
@@ -360,11 +499,13 @@ function submitObjectForm(form) {
   switch (form.attr("name")) {
     case "addObject":
       var json = formDataToJson(form.serializeArray());
-      addObject("space", json, function(s) {
+      var type = json.type;
+      json.type = null;
+      addObject(type, json, function(s) {
         deferred.resolve(s);
       });
       var successMessage =
-        "<strong>" + json.name + "</strong> was succesfully created.";
+        "<strong>" + json.name ? json.name : json.hardwareId + "</strong> was succesfully created.";
       break;
     case "editObject":
       var json = formDataToJson(form.serializeArray());
@@ -381,14 +522,25 @@ function submitObjectForm(form) {
       var successMessage =
         "<strong>" + selectedNode.label + "</strong> was succesfully deleted.";
       break;
+    case "apiForm":
+      var json = formDataToJson(form.serializeArray());
+      executeApiDigitalTwinJSON(json.apiCall, json.apiMethod, json.apiJSON, function(s){
+        apiJsonToTable(s,"JSON Output");
+        apiJSONOutput.value = JSON.stringify(s, undefined, 4);
+        if (!(json.apiMethod === "GET")) {
+          refreshData();
+        }
+        deferred.resolve(s);
+      });
+      break;
     default:
       console.log("Unknown Form.");
       break;
   }
 
   // When the call is complete, show the alert message.
-  $.when(deferred).done(function(success) {
-    if (success === true) {
+  $.when(deferred).done(function(response) {
+    if (!response.error) {
       showAlert(
         "success",
         "Success",
@@ -398,7 +550,7 @@ function submitObjectForm(form) {
       showAlert(
         "error",
         "Error",
-        "You probably don't have permissions to update the model."
+        response.error.message
       );
     }
     // Reset the loaded icon and hide the object form drawer.
@@ -486,11 +638,32 @@ function jsonToTable(json, tableName) {
         tableBody.append("<tr><td>" + v + "</td></tr>");
       });
       break;
+    case "JSON":
+        tableBody.append("<tr><td>" + JSON.stringify(json, null,2) + "</td></tr>");
+      break;
     default:
       break;
   }
   $("#infoPanelContent> div.info").append(table);
 }
+
+// Function that will create the API json tables from the json.
+function apiJsonToTable(json, tableName) {
+  if (!json || json.length < 1) return;
+  // Create the basic elements
+  var table = $("<table class='collapsable'></table>");
+  var caption = $(
+    "<caption>" + ucFirst(tableName.toString()) + "</caption>"
+  ).on("click", function() {
+    table.toggleClass("collapsed");
+  });
+  table.append(caption);
+  var tableBody = table.append("<tbody></tbody>");
+  tableBody.append("<tr><td>" + JSON.stringify(json, null,2) + "</td></tr>");
+
+  $("#apiPanelContent> div.info").append(table);
+}
+
 
 function ucFirst(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
