@@ -1,9 +1,11 @@
 # Introduction
 This "Azure Digital Twins Graph Viewer" serves as a front-end to the [Azure Digital Twins](https://azure.microsoft.com/en-us/services/digital-twins/) spatial intelligence graph. It provides the following features:
 - Visualizing the relationship between spaces, devices and sensors created in the Azure Digital Twins model
-- Add, Edit and Delete Spaces and Devices
+- Add, Edit and Delete Spaces, Devices and Sensors
 - Changing the hierarchy by moving devices and spaces to different spaces
 - Viewing basic properties and values of nodes
+- Add a root space and IoT Hub as resource if the digital twin is empty
+- Execute direct API calls to do all other digital twin interactions not implemented
 
 The Graph Viewer is built to be a lightweight, adaptable front-end. It uses only client-side code and as such should be easy to deploy in different environments. 
 
@@ -44,11 +46,6 @@ When you open the Graph Viewer webpage, enter the following information in the t
 - twinsInstanceRoot: This is the full URL of your Azure Digital Twins instance, ending in `azuresmartspaces.net/`.
 - tenant: This is the name or id of your Azure tenant, for example `contoso.onmicrosoft.com` or `6f68d89e-8f99-4798-8850-a5d557c3341e`
 - clientId: This is the application id of the Azure Active Directory application you created in the previous step. It is formatted as a Guid.
-
-
-## Known Limitations
-### Not able to add new devices and sensors
-The current version does not allow you to create a device or a sensors. Functionality for devices and sensors is limited to editting and deleting. 
 
 # Contributing
 

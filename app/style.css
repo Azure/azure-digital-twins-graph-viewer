@@ -14,6 +14,7 @@
     --main-gold: rgb(255,185,0);
     --main-red: rgb(168,0,0);
 
+    --main-glyph-api: "\E774";
     --main-glyph-space: "\E774";
     --main-glyph-device: "\F22C";
     --main-glyph-sensor: "\EC4A";
@@ -62,7 +63,7 @@ label {
     padding-left: 0px;
 }
 
-input, select {
+input, select, textarea {
     background-color: var(--main-grey);
     border-radius: 3px;
     border: 0;
@@ -74,8 +75,13 @@ input, select {
     margin-bottom: 8px;
 }
 
-input {
+input, textarea {
     width: calc(100% - 8px);
+}
+
+a {
+    color: var(--main-light-blue);
+    text-decoration: none;
 }
 
 select {
@@ -101,7 +107,7 @@ label.twins-config-label {
     width: 100%;
 }
 
-input:disabled {
+input:disabled, textarea:disabled {
     color: rgba(255,255,255,0.4);
 }
 
@@ -390,6 +396,10 @@ ul.action-menu {
             content: var(--main-glyph-add);
         }
 
+        ul.action-menu li.addSensor::before {
+            content: var(--main-glyph-add);
+        }
+
         ul.action-menu li.edit::before {
             content: var(--main-glyph-edit);
         }
@@ -413,6 +423,10 @@ ul.action-menu {
 
         ul.action-menu li.refresh::before {
             content: "\E72C";
+        }
+
+        ul.action-menu li.addRoot::before {
+            content: var(--main-glyph-add);
         }
 
         ul.action-menu li.expand::before {
@@ -474,6 +488,10 @@ ul.action-menu li ul {
 
     ul.action-menu li ul.showSubMenu li span.space::before {
         content: var(--main-glyph-space)
+    }
+
+    ul.action-menu li ul.showSubMenu li span.api::before {
+        content: var(--main-glyph-api)
     }
 
     ul.action-menu li ul.showSubMenu li span.device::before {
@@ -745,6 +763,10 @@ section.welcome h3 {
     fill: var(--main-blue);
 }
 
+.graph-canvas .node .api {
+    fill: var(--main-green);
+}
+
 .graph-canvas .node .sensor {
     fill: var(--main-magenta);
 }
@@ -813,6 +835,10 @@ section.welcome h3 {
     background-color: var(--main-blue);
 }
 
+.drawer header.api {
+    background-color: var(--main-green);
+}
+
 .drawer header.device {
     background-color: var(--main-purple);
 }
@@ -842,6 +868,10 @@ section.welcome h3 {
     top: 3px;
     color: var(--main-white);
     border-radius: 3px;
+}
+
+.drawer header.api h2::before {
+    content: "\E774";
 }
 
 .drawer header.space h2::before {

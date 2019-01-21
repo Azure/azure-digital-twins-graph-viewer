@@ -57,10 +57,20 @@
                 // Refresh the data if the refresh button is clicked.
                 $("#refreshButton").click(function () { refreshData(); });
 
+                // Create new root space if button is clicked.
+                $("#addRootButton").click(function () { addRootSpace(); });
+
+                // Open API panel
+                $("#apiButton").click(function () { showApiPanel(); });
+                // Hide the API panel when the close button is clicked.
+                $("#apiCloseButton").click(function () { hideApiPanel(); });
+
                 // Hide the info panel when the close button is clicked.
                 $("#infoCloseButton").click(function () { hideInfoPanel(); });
                 
                 $("#objectAddButton").click(function() { showAddObjectForm(selectedNode, "space"); });
+                $("#objectAddDeviceButton").click(function() { showAddObjectForm(selectedNode, "device"); });
+                $("#objectAddSensorButton").click(function() { showAddObjectForm(selectedNode, "sensor"); });
                 $("#objectEditButton").click(function() { showEditObjectForm(selectedNode); });
                 $("#objectDeleteButton").click(function() { showDeleteObjectForm(selectedNode); });
 
@@ -186,7 +196,9 @@
                     </ol>
     
                     <!-- Action Menu -->
-                    <ul class="action-menu">
+                    <ul id="action-menu" class="action-menu">
+                        <li id="apiButton">Execute API Call</li>
+                        <li id="addRootButton" class="addRoot" style="display: none;">Create Root Space</li>
                         <li id="showNodesButton" class="show">Show
                             <ul id="showSubMenu" class="showSubMenu">
                                 <li class="selected"><span class="space">Spaces</span></li>
@@ -205,14 +217,51 @@
                 </div>
             </div>
 
+            <!-- API panel to execute API calls -->
+            <aside id="apiPanel" class="drawer">
+                    <header>
+                            <h2 class="api">Digital Twin API</h2>
+                            <span class="drawer-close" id="apiCloseButton"></span>
+                    </header>
+                    <section id="apiPanelContent" class="drawer-content">
+                        <!-- Drawer for the form. -->
+                        <div id="apiPanelDrawer" class="drawer-slide-over">
+                            <form name="apiForm">
+                                <h3>Call (excluding base url)</h3>
+                                <div class="form-container">
+                                    <label>API (<a href="https://docs.westcentralus.azuresmartspaces.net/management/swagger" target="_new">Swagger</a>)</label>
+                                    <input type="text" name="apiCall"/>
+                                    <label>Method</label>
+                                    <select name="apiMethod">
+                                        <option>GET</option>
+                                        <option>PUT</option>
+                                        <option>POST</option>
+                                        <option>DELETE</option>
+                                        <option>PATCH</option>
+                                    </select>
+                                    <label>JSON Input</label>
+                                    <textarea rows="3" name="apiJSON" class="json"></textarea>
+                                    <label>JSON Output</label>
+                                    <textarea rows="7" name="apiJSONOutput" id="apiJSONOutput" disabled="true" class="json"></textarea>
+                                </div>
+                                <div class="button-container">  
+                                    <input type="submit" class="button confirm" value="Execute"> 
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+            </aside>
+
             <!-- Info panel that provides more info on the selected node -->
             <aside id="infoPanel" class="drawer">
                 <img src="images/ajax-loader.gif" id="panelLoaderIcon" class="loaderIcon" style="display: none;" />
                 <header>
-                    <h2 class="space">Device</h2>
+                    <h2 class="space">Space</h2>
                     <span class="drawer-close" id="infoCloseButton"></span>
                     <ul class='action-menu'>
-                        <li id='objectAddButton' class='add'>Add Child</li>
+                        <li id='objectAddButton' class='add'>Add Child Space</li>
+                        <li id='objectAddDeviceButton' class='add'>Add Device</li>
+                        <li id='objectAddSensorButton' class='addSensor'>Add Sensor</li>
                         <li id='objectEditButton' class='edit'>Edit</li>
                         <li id='objectDeleteButton' class='delete'>Delete</li>
                     </ul>
@@ -225,7 +274,7 @@
                     <!-- Drawer for the form. -->
                     <div id="infoPanelDrawer" class="drawer-slide-over">
                         <form name="addObject">
-                            <h3>Add new child Space</h3>
+                            <h3>Add New Child Item</h3>
                             <div class="form-container">
                                 <!-- we will generate the add form here. -->
                             </div>
@@ -245,7 +294,7 @@
                             </div>
                         </form>
                         <form name="deleteObject">
-                            <h3>Delete this object</h3>
+                            <h3>Delete Object</h3>
                             <p>These child objects will also be deleted:</p>
                             <table class="collapsable">
                                 <caption onclick="$(this).parent('table').toggleClass('collapsed')">Child Objects</caption>
@@ -265,9 +314,9 @@
     <footer class="footer">        
         <div class="footer-container">
             <ol>
-                <li><a href="https://www.azure.com">Azure</a></li>
-                <li><a href="https://azure.microsoft.com/services/digital-twins/">Digital Twins</a></li>
-                <li><a href="https://github.com/Azure/azure-digital-twins-graph-viewer">GitHub</a></li>
+                <li><a href="https://www.azure.com" target="_new">Azure</a></li>
+                <li><a href="https://azure.microsoft.com/services/digital-twins/" target="_new">Digital Twins</a></li>
+                <li><a href="https://github.com/Azure/azure-digital-twins-graph-viewer" target="_new">GitHub</a></li>
             </ol>
 
             <!-- Zoom slider -->
