@@ -47,6 +47,15 @@ When you open the Graph Viewer webpage, enter the following information in the t
 - tenant: This is the name or id of your Azure tenant, for example `contoso.onmicrosoft.com` or `6f68d89e-8f99-4798-8850-a5d557c3341e`
 - clientId: This is the application id of the Azure Active Directory application you created in the previous step. It is formatted as a Guid.
 
+## Run as Docker container
+
+If you want to run the the Graph Viewer as Docker container, you can execute the following commands:
+
+- `docker build . -t azure-digital-twins-viewer`
+- `docker run -p 8080:80 azure-digital-twins-viewer`
+
+Go to http://localhost:8080
+
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
