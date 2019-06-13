@@ -6,18 +6,29 @@
     --main-light-grey: rgb(55,55,55);
     --main-lighter-grey: rgb(207,207,207);
     --main-light-blue: rgb(0,139,245);
+
     --main-blue: rgb(0,120,212);
+--main-green:rgb(211, 225, 49);
+
+
+
+
+
+
+    
     --main-dark-purple: rgb(53,29,93);
     --main-purple: rgb(92,45,145);
     --main-magenta: rgb(180, 0, 158);
+    --main-blue-green:rgb(20, 166, 146);
     --main-green: rgb(16,124,16);
     --main-gold: rgb(255,185,0);
     --main-red: rgb(168,0,0);
-
     --main-glyph-api: "\E774";
     --main-glyph-space: "\E774";
     --main-glyph-device: "\F22C";
     --main-glyph-sensor: "\EC4A";
+    --main-glyph-userdefinedfunctions: "\EC4A";
+    --main-glyph-matchers: "\uE71C";
     --main-glyph-check: "\E001";
     --main-glyph-add: "\E109";
     --main-glyph-delete: "\E107";
@@ -400,6 +411,15 @@ ul.action-menu {
             content: var(--main-glyph-add);
         }
 
+        ul.action-menu li.addUDF::before {
+            content: var(--main-glyph-add);
+        }
+
+        ul.action-menu li.addMatchers::before {
+            content: var(--main-glyph-add);
+        }
+
+
         ul.action-menu li.edit::before {
             content: var(--main-glyph-edit);
         }
@@ -464,8 +484,7 @@ ul.action-menu li ul {
         position: relative;
         top: -3px;
         left: 3px;
-    }
-
+    } 
     ul.action-menu li ul.showSubMenu li:nth-child(3)::before {
         content: "\ED65";
         font-family: "Segoe MDL2 Assets";
@@ -478,6 +497,32 @@ ul.action-menu li ul {
         top: -3px;
         left: 3px;
     }
+    ul.action-menu li ul.showSubMenu li:nth-child(4)::before {
+        content: "\ED65";
+        font-family: "Segoe MDL2 Assets";
+        transform: rotate(90deg);
+        font-size: 12px;
+        margin-right: 12px;
+        display: inline-block;
+        position: relative;
+        top: -3px;
+        left: 3px;
+    }
+
+    ul.action-menu li ul.showSubMenu li:nth-child(5)::before {
+        content: "\ED65";
+        font-family: "Segoe MDL2 Assets";
+        transform: rotate(90deg);
+        font-size: 12px;
+        margin-right: 12px;
+        display: inline-block;
+        position: relative;
+        top: -3px;
+        left: 3px;
+    }
+
+  
+
 
     ul.action-menu li ul.showSubMenu li span::before {
         font-family: "Segoe MDL2 Assets";
@@ -501,7 +546,12 @@ ul.action-menu li ul {
     ul.action-menu li ul.showSubMenu li span.sensor::before {
         content: var(--main-glyph-sensor)
     }
-
+    ul.action-menu li ul.showSubMenu li span.userdefinedfunctions::before {
+        content: var(--main-glyph-userdefinedfunctions)
+    }
+    ul.action-menu li ul.showSubMenu li span.matchers::before {
+        content: var(--main-glyph-matchers)
+    }
     ul.action-menu li ul li:hover {
         background-color: rgba(255,255,255,0.2);
     }
@@ -770,6 +820,12 @@ section.welcome h3 {
 .graph-canvas .node .sensor {
     fill: var(--main-magenta);
 }
+.graph-canvas .node .userdefinedfunctions {
+    fill: var(--main-blue-green);
+}
+.graph-canvas .node .matchers {
+    fill: var(--main-green);
+}
 
 .graph-canvas .node .nodeText {
     font-size: 13px;
@@ -846,6 +902,12 @@ section.welcome h3 {
 .drawer header.sensor {
     background-color: var(--main-magenta);
 }
+.drawer header.userdefinedfunctions{
+        background-color: var(--main-blue-green);
+    }
+.drawer header.matchers {
+        background-color: var(--main-green);
+    }
 
 .drawer header h2 {
     text-align: left;
@@ -883,8 +945,14 @@ section.welcome h3 {
 }
 
 .drawer header.sensor h2::before {
-    content: "\EC4A";
-}
+        content: "\EC4A";
+    }
+    .drawer header.userdefinedfunctions h2::before {
+        content: "\EC4A";
+    }
+    .drawer header.matchers h2::before {
+        content: "\uE71C";
+    }
 
 .drawer header ul.action-menu {
     height: 38px;
@@ -1033,10 +1101,17 @@ section.drawer-content > div {
     .drawer tbody td.device::before {
         content: "\F22C";
     }
-    
+   
     .drawer tbody td.sensor::before {
         content: "\EC4A";
     }
+    .drawer tbody td.userdefinedfunctions::before {
+            content: "\uE771";
+        }
+
+    .drawer tbody td.matchers::before {
+            content: "\uE71C";
+        }
 
     .drawer table.collapsed caption::after {
         content: var(--main-glyph-chev-left);

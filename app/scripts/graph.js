@@ -418,6 +418,8 @@ function updateGraphVisualizer(source, animated) {
                 case "space": return "";
                 case "device": return "";
                 case "sensor": return "";
+                case "userdefinedfunctions": return "";
+                case "matchers": return "";
                 default: return "";
             }
         })
@@ -429,7 +431,7 @@ function updateGraphVisualizer(source, animated) {
         .attr("width", nodeWidth)
         .attr("text-anchor", "start")
         .text(function (d) {
-            return d.label;
+            return d.label || d.name;
          })
         .attr("style", "clip-path: url(#nodeTextClipPath);")
         .attr("pointer-events", "none");
@@ -437,7 +439,7 @@ function updateGraphVisualizer(source, animated) {
     // Create the drag indicator that shows when item can be dragged there..
     // We cannot drag sensors.. so we don't create one if the node is a sensor.
     var nodeDragIndicator = nodeEnter.filter(function(d){
-            return (d.type != "sensor");
+        return (d.type != "sensor");
         })
         .append("g")
         .attr("class", "addIndicator");

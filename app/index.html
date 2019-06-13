@@ -71,6 +71,8 @@
                 $("#objectAddButton").click(function() { showAddObjectForm(selectedNode, "space"); });
                 $("#objectAddDeviceButton").click(function() { showAddObjectForm(selectedNode, "device"); });
                 $("#objectAddSensorButton").click(function() { showAddObjectForm(selectedNode, "sensor"); });
+                $("#objectAddUserDefinedFunctionsButton").click(function () { showAddObjectForm(selectedNode, "userdefinedfunctions"); });
+                $("#objectAddMatcherButton").click(function () { showAddObjectForm(selectedNode, "matchers"); });
                 $("#objectEditButton").click(function() { showEditObjectForm(selectedNode); });
                 $("#objectDeleteButton").click(function() { showDeleteObjectForm(selectedNode); });
 
@@ -204,6 +206,10 @@
                                 <li class="selected"><span class="space">Spaces</span></li>
                                 <li><span class="device">Devices</span></li>
                                 <li><span class="sensor">Sensors</span></li>
+                                <li><span class="userdefinedfunctions">UserDefinedFunctions</span></li>
+                                <li><span class="matchers">Matchers</span></li>
+                                
+
                             </ul>
                         </li>
                         <li id="refreshButton" class="refresh">Refresh</li>
@@ -262,6 +268,10 @@
                         <li id='objectAddButton' class='add'>Add Child Space</li>
                         <li id='objectAddDeviceButton' class='add'>Add Device</li>
                         <li id='objectAddSensorButton' class='addSensor'>Add Sensor</li>
+
+                        <li id='objectAddUserDefinedFunctionsButton' class='addUDF'>Add UDF</li>
+                        <li id='objectAddMatchersButton' class='addMatchers'>Add Matcher</li>
+
                         <li id='objectEditButton' class='edit'>Edit</li>
                         <li id='objectDeleteButton' class='delete'>Delete</li>
                     </ul>

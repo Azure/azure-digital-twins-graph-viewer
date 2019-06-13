@@ -20,25 +20,39 @@ function showInfoPanel(d) {
   $("#infoPanelContent > div.info").empty(); // Remove any old info
   $("#panelLoaderIcon").show();
   $("#infoPanel > header")
-    .removeClass("space device sensor")
+    .removeClass("space device sensor userdefinedfunctions matchers")
     .addClass(d.type);
   $("#infoPanel h2")
     .text(d.label)
-    .removeClass("space device sensor")
+      .removeClass("space device sensor userdefinedfunctions matchers")
     .addClass(d.type);
   $("#infoPanelDrawer.show").removeClass("show");
   $("#infoPanel").addClass("open"); // Open the panel
 
-  if (d.type == "space") {
-    $("#infoPanel > header > ul.action-menu > li.add").show();
-    $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
-  } else {
-    $("#infoPanel > header > ul.action-menu > li.add").hide();
-    if (d.type == "device")
-      $("#infoPanel > header > ul.action-menu > li.addSensor").show();
-    else
-      $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
-  }
+    if (d.type == "space") {
+        $("#infoPanel > header > ul.action-menu > li.add").show();
+        $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
+    }
+    else if (d.type == "matchers") {
+        $("#infoPanel > header > ul.action-menu > li.add").hide();
+        $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
+        $("#infoPanel > header > ul.action-menu > li.addUDF").show();
+    }
+    else if (d.type=="userdefinedfunctions"){
+        $("#infoPanel > header > ul.action-menu > li.add").hide();
+        $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
+        $("#infoPanel > header > ul.action-menu > li.addMatchers").show();
+        $("#infoPanel > header > ul.action-menu > li.addUDF").show();
+    }
+
+    else {
+        $("#infoPanel > header > ul.action-menu > li.add").hide();
+        if (d.type == "device")
+            $("#infoPanel > header > ul.action-menu > li.addSensor").show();
+        else
+            $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
+    }
+
 
   // Let's get all the info from the selected element by firing a new API request.
   getDigitalTwinsObject(d.id, d.type, function(data) {
@@ -55,7 +69,13 @@ function showInfoPanel(d) {
         break;
       case "sensor":
         jsonToTable(data.value, "value");
-        break;
+            break;
+       case "matchers":
+            jsonToTable(data.value, "value");
+            break;
+        case "userdefinedfunctions":
+            jsonToTable(data.value, "value");
+            break; 
       default:
         break;
     }
@@ -195,7 +215,91 @@ function showAddObjectForm(parent, type) {
         // Hidden field to pass type for submit.
         $("<input />", { name: "type", hidden: true, val: type })
       );
-      break;
+          break;
+      case "userdefinedfunctions":
+          formContainer.append(
+              $("<label></label>", { for: "hardewareId", text: "Hardware ID:" }),
+              $("<input />", { type: "text", name: "hardwareId" }),
+              $("<label></label>", { for: "typeId", text: "Type:" }),
+              $("<select></select>", { name: "typeId", title: "UserDefinedFunctionType" }).append(
+                  "<option>Loading...</option>"
+              ),
+              $("<label></label>", { for: "dataTypeId", text: "Data Type:" }),
+              $("<select></select>", {
+                  name: "dataTypeId",
+                  title: "SensorDataType"
+              }).append("<option>Loading...</option>"),
+              $("<label></label>", { for: "dataSubtypeId", text: "Data Subtype:" }),
+              $("<select></select>", {
+                  name: "dataSubtypeId",
+                  title: "UserDefinedFunctionDataSubtype"
+              }).append("<option>Loading...</option>"),
+              $("<label></label>", {
+                  for: "dataUnitTypeId",
+                  text: "Data Unit Type:"
+              }),
+              $("<select></select>", {
+                  name: "dataUnitTypeId",
+                  title: "UserDefinedFunctionDataUnitType"
+              }).append("<option>Loading...</option>"),
+              $("<label></label>", {
+                  for: "parentSpaceId",
+                  text: "Parent Space ID:"
+              }),
+              $("<input />", {
+                  type: "text",
+                  name: "parentSpaceIdDisabled",
+                  disabled: true,
+                  val: parent.id
+              }),
+              // Hidden field is needed since a disabled field is not passed when submitting.
+              $("<input />", { name: "spaceId", hidden: true, val: parent.id }),
+              // Hidden field to pass type for submit.
+              $("<input />", { name: "type", hidden: true, val: type })
+          );
+          break;
+      case "matchers":
+          formContainer.append(
+              $("<label></label>", { for: "hardewareId", text: "Hardware ID:" }),
+              $("<input />", { type: "text", name: "hardwareId" }),
+              $("<label></label>", { for: "typeId", text: "Type:" }),
+              $("<select></select>", { name: "typeId", title: "MatcherType" }).append(
+                  "<option>Loading...</option>"
+              ),
+              $("<label></label>", { for: "dataTypeId", text: "Data Type:" }),
+              $("<select></select>", {
+                  name: "dataTypeId",
+                  title: "MatcherDataType"
+              }).append("<option>Loading...</option>"),
+              $("<label></label>", { for: "dataSubtypeId", text: "Data Subtype:" }),
+              $("<select></select>", {
+                  name: "dataSubtypeId",
+                  title: "MatcherDataSubtype"
+              }).append("<option>Loading...</option>"),
+              $("<label></label>", {
+                  for: "dataUnitTypeId",
+                  text: "Data Unit Type:"
+              }),
+              $("<select></select>", {
+                  name: "dataUnitTypeId",
+                  title: "MatcherDataUnitType"
+              }).append("<option>Loading...</option>"),
+              $("<label></label>", {
+                  for: "parentSpaceId",
+                  text: "Parent Space ID:"
+              }),
+              $("<input />", {
+                  type: "text",
+                  name: "parentSpaceIdDisabled",
+                  disabled: true,
+                  val: parent.id
+              }),
+              // Hidden field is needed since a disabled field is not passed when submitting.
+              $("<input />", { name: "spaceId", hidden: true, val: parent.id }),
+              // Hidden field to pass type for submit.
+              $("<input />", { name: "type", hidden: true, val: type })
+          );
+          break;
       case "type":
       formContainer.append(
         $("<label></label>", { for: "hardewareId", text: "Hardware ID:" }),
@@ -409,7 +513,105 @@ function showEditObjectForm(object) {
           title: "SensorDataUnitType"
         }).append("<option>Loading...</option>")
       );
-      break;
+          break;
+      case "userdefinedfunctions":
+          formContainer.append(
+              $("<label></label>", { for: "port", text: "Port:" }),
+              $("<input />", {
+                  type: "text",
+                  name: "port",
+                  val: "port" in object ? object.port : ""
+              }),
+              $("<label></label>", { for: "hardwareId", text: "Hardware ID:" }),
+              $("<input />", {
+                  type: "text",
+                  name: "hardwareId",
+                  val: "hardwareId" in object ? object.hardwareId : ""
+              }),
+              $("<label></label>", { for: "pollRate", text: "Poll Rate:" }),
+              $("<input />", {
+                  type: "text",
+                  name: "pollRate",
+                  val: "pollRate" in object ? object.pollRate : ""
+              }),
+              $("<label></label>", { for: "typeId", text: "Type:" }),
+              $("<select></select>", { name: "typeId", title: "UserDefinedFunctionType" }).append(
+                  "<option>Loading...</option>"
+              ),
+              $("<label></label>", { for: "portTypeId", text: "Port Type:" }),
+              $("<select></select>", {
+                  name: "portTypeId",
+                  title: "UserDefinedFunctionPortType"
+              }).append("<option>Loading...</option>"),
+              $("<label></label>", { for: "dataTypeId", text: "Data Type:" }),
+              $("<select></select>", {
+                  name: "dataTypeId",
+                  title: "UserDefinedFunctionDataType"
+              }).append("<option>Loading...</option>"),
+              $("<label></label>", { for: "dataSubtypeId", text: "Data Subtype:" }),
+              $("<select></select>", {
+                  name: "dataSubtypeId",
+                  title: "UserDefinedFunctionDataSubtype"
+              }).append("<option>Loading...</option>"),
+              $("<label></label>", {
+                  for: "dataUnitTypeId",
+                  text: "Data Unit Type:"
+              }),
+              $("<select></select>", {
+                  name: "dataUnitTypeId",
+                  title: "UserDefinedFunctionDataUnitType"
+              }).append("<option>Loading...</option>")
+          );
+          break;
+      case "matchers":
+          formContainer.append(
+              $("<label></label>", { for: "port", text: "Port:" }),
+              $("<input />", {
+                  type: "text",
+                  name: "port",
+                  val: "port" in object ? object.port : ""
+              }),
+              $("<label></label>", { for: "hardwareId", text: "Hardware ID:" }),
+              $("<input />", {
+                  type: "text",
+                  name: "hardwareId",
+                  val: "hardwareId" in object ? object.hardwareId : ""
+              }),
+              $("<label></label>", { for: "pollRate", text: "Poll Rate:" }),
+              $("<input />", {
+                  type: "text",
+                  name: "pollRate",
+                  val: "pollRate" in object ? object.pollRate : ""
+              }),
+              $("<label></label>", { for: "typeId", text: "Type:" }),
+              $("<select></select>", { name: "typeId", title: "MatcherType" }).append(
+                  "<option>Loading...</option>"
+              ),
+              $("<label></label>", { for: "portTypeId", text: "Port Type:" }),
+              $("<select></select>", {
+                  name: "portTypeId",
+                  title: "MatcherPortType"
+              }).append("<option>Loading...</option>"),
+              $("<label></label>", { for: "dataTypeId", text: "Data Type:" }),
+              $("<select></select>", {
+                  name: "dataTypeId",
+                  title: "MatcherDataType"
+              }).append("<option>Loading...</option>"),
+              $("<label></label>", { for: "dataSubtypeId", text: "Data Subtype:" }),
+              $("<select></select>", {
+                  name: "dataSubtypeId",
+                  title: "MatcherDataSubtype"
+              }).append("<option>Loading...</option>"),
+              $("<label></label>", {
+                  for: "dataUnitTypeId",
+                  text: "Data Unit Type:"
+              }),
+              $("<select></select>", {
+                  name: "dataUnitTypeId",
+                  title: "MatcherDataUnitType"
+              }).append("<option>Loading...</option>")
+          );
+          break;
     default:
       return;
   }

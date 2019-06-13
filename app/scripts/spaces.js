@@ -4,7 +4,7 @@
 // An empty array that will hold all the nodes to be displayed.
 var stagedNodes = [];
 // An array that has the object types that should be loaded from Digital Twins for the graph.
-var objectTypesToLoad = ["space", "device", "sensor"];
+var objectTypesToLoad = ["space", "device", "sensor","matchers", "userdefinedfunctions"];
 var oDataTop = 999;
 // Dictionary to keep track of oDataSkip count for each object type
 var oDataSkips = {}
@@ -89,6 +89,12 @@ function getDigitalTwinsObject(id, type, fComplete) {
                     break;
                 case "sensor":
                     url = url + "sensors/" + id + "?includes=properties,types,fullPath,value";
+                    break;
+                case "userdefinedfunctions":
+                    url = url + "userdefinedfunctions/" + id + "?includes=description,space,fullpath,matchers ";
+                    break;
+                case "matchers":
+                    url = url + "matchers/" + id + "?includes=description,space,conditions,userdefinedfunctions";
                     break;
                 default:
                     console.log("Unknown object type: " + type);
@@ -181,6 +187,13 @@ function getRequestUrlWithoDataSkip(type) {
         case "sensor":
             url = url + "sensors" + "?$top=" + oDataTop + "&$skip=" + oDataSkips[type];
             break;
+       case "userdefinedfunctions":
+            url = url + "userdefinedfunctions" + "?$top=" + oDataTop + "&$skip=" + oDataSkips[type];
+            break;
+       
+        case "matchers":
+            url = url + "matchers" + "?$top=" + oDataTop + "&$skip=" + oDataSkips[type];
+            break;
         default:
             return;
     }
@@ -197,6 +210,8 @@ function extendNodeProperties(node, type) {
         case "space": label = node.friendlyName ? node.friendlyName : node.name; break;
         case "device": label = node.friendlyName ? node.friendlyName : node.name; break;
         case "sensor": label = node.friendlyName ? node.friendlyName : node.hardwareId; break;
+        case "userdefinedfunctions": label = node.friendlyName ? node.friendlyName : node.hardwareId; break;
+        case "matchers": label = node.friendlyName ? node.friendlyName : node.hardwareId; break;
         default: return;
     }
     $.extend(node, {
@@ -268,6 +283,13 @@ function postDigitalTwinsObject(objectType, jsonData, fComplete) {
                 case "sensor":
                     url = url + "sensors";
                     break;
+               case "userdefinedfunctions":
+                    url = url + "userdefinedfunctions";
+                    break;
+                  
+                case "matchers":
+                    url = url + "matchers";
+                    break;
                 default:
                     return;
             }
@@ -311,6 +333,13 @@ function patchDigitalTwins(objectId, objectType, jsonData, fComplete) {
                     break;
                 case "sensor":
                     url = url + "sensors/";
+                    break;
+               case "userdefinedfunctions":
+                    url = url + "userdefinedfunctions/";
+                    break;
+                  
+                case "matchers":
+                    url = url + "matchers/";
                     break;
                 default:
                     return;
@@ -361,6 +390,13 @@ function deleteDigitalTwinsObject(objectId, objectType, fComplete) {
                 case "sensor":
                     url = url + "sensors/";
                     break;
+                case "userdefinedfunctions":
+                    url = url + "userdefinedfunctions/";
+                    break;
+                   
+                case "matchers":
+                    url = url + "matchers/";
+                    break;
                 default:
                     return;
             }
@@ -376,6 +412,7 @@ function deleteDigitalTwinsObject(objectId, objectType, fComplete) {
                 url: url,
                 contentType: "application/json"
             }).complete(function (xhr, status) {
+                xhr.responseJSON['typeName'] = objectType;
                 fComplete(status, xhr.responseJSON);
             });
         }
@@ -406,6 +443,13 @@ function showGraphData(data) {
                 break;
             case "sensor":
                 var parent = dataMap[node.deviceId];
+                break;
+            case "userdefinedfunctions":
+                var parent = dataMap[node.spaceId];
+                break;
+                
+            case "matchers":
+                var parent = dataMap[node.spaceId];
                 break;
             default:
                 break;
@@ -527,6 +571,8 @@ function updateObject(object, data, fComplete) {
                     case "space": label = data.friendlyName ? data.friendlyName : data.name; break;
                     case "device": label = data.friendlyName ? data.friendlyName : data.name; break;
                     case "sensor": label = data.friendlyName ? data.friendlyName : data.port; break;
+                    case "userdefinedfunctions": label = data.friendlyName ? data.friendlyName : data.port; break;
+                    case "matchers": label = data.friendlyName ? data.friendlyName : data.port; break;
                     default: return;
                 }
                 $.extend(data, {
