@@ -23,7 +23,7 @@ function showInfoPanel(d) {
     .removeClass("space device sensor userdefinedfunctions matchers")
     .addClass(d.type);
   $("#infoPanel h2")
-    .text(d.label)
+    .text(d.label||d.name)
       .removeClass("space device sensor userdefinedfunctions matchers")
     .addClass(d.type);
   $("#infoPanelDrawer.show").removeClass("show");
@@ -32,21 +32,26 @@ function showInfoPanel(d) {
     if (d.type == "space") {
         $("#infoPanel > header > ul.action-menu > li.add").show();
         $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
+        $("#infoPanel > header > ul.action-menu > li.addUDF").show();
+        $("#infoPanel > header > ul.action-menu > li.addMatchers").show();
     }
     else if (d.type == "matchers") {
         $("#infoPanel > header > ul.action-menu > li.add").hide();
         $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
-        $("#infoPanel > header > ul.action-menu > li.addUDF").show();
+        $("#infoPanel > header > ul.action-menu > li.addUDF").hide();
+        $("#infoPanel > header > ul.action-menu > li.addMatchers").hide();
     }
     else if (d.type=="userdefinedfunctions"){
         $("#infoPanel > header > ul.action-menu > li.add").hide();
         $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
-        $("#infoPanel > header > ul.action-menu > li.addMatchers").show();
-        $("#infoPanel > header > ul.action-menu > li.addUDF").show();
+        $("#infoPanel > header > ul.action-menu > li.addMatchers").hide();
+        $("#infoPanel > header > ul.action-menu > li.addUDF").hide();
     }
 
     else {
         $("#infoPanel > header > ul.action-menu > li.add").hide();
+        $("#infoPanel > header > ul.action-menu > li.addMatchers").hide();
+        $("#infoPanel > header > ul.action-menu > li.addUDF").hide();
         if (d.type == "device")
             $("#infoPanel > header > ul.action-menu > li.addSensor").show();
         else
@@ -221,18 +226,18 @@ function showAddObjectForm(parent, type) {
               $("<label></label>", { for: "hardewareId", text: "Hardware ID:" }),
               $("<input />", { type: "text", name: "hardwareId" }),
               $("<label></label>", { for: "typeId", text: "Type:" }),
-              $("<select></select>", { name: "typeId", title: "UserDefinedFunctionType" }).append(
+              $("<select></select>", { name: "typeId", title: "UserDefinedFunctionsType" }).append(
                   "<option>Loading...</option>"
               ),
               $("<label></label>", { for: "dataTypeId", text: "Data Type:" }),
               $("<select></select>", {
                   name: "dataTypeId",
-                  title: "SensorDataType"
+                  title: "UserDefinedFunctionsDataType"
               }).append("<option>Loading...</option>"),
               $("<label></label>", { for: "dataSubtypeId", text: "Data Subtype:" }),
               $("<select></select>", {
                   name: "dataSubtypeId",
-                  title: "UserDefinedFunctionDataSubtype"
+                  title: "UserDefinedFunctionsDataSubtype"
               }).append("<option>Loading...</option>"),
               $("<label></label>", {
                   for: "dataUnitTypeId",
@@ -240,7 +245,7 @@ function showAddObjectForm(parent, type) {
               }),
               $("<select></select>", {
                   name: "dataUnitTypeId",
-                  title: "UserDefinedFunctionDataUnitType"
+                  title: "UserDefinedFunctionsDataUnitType"
               }).append("<option>Loading...</option>"),
               $("<label></label>", {
                   for: "parentSpaceId",
@@ -263,18 +268,18 @@ function showAddObjectForm(parent, type) {
               $("<label></label>", { for: "hardewareId", text: "Hardware ID:" }),
               $("<input />", { type: "text", name: "hardwareId" }),
               $("<label></label>", { for: "typeId", text: "Type:" }),
-              $("<select></select>", { name: "typeId", title: "MatcherType" }).append(
+              $("<select></select>", { name: "typeId", title: "MatchersType" }).append(
                   "<option>Loading...</option>"
               ),
               $("<label></label>", { for: "dataTypeId", text: "Data Type:" }),
               $("<select></select>", {
                   name: "dataTypeId",
-                  title: "MatcherDataType"
+                  title: "MatchersDataType"
               }).append("<option>Loading...</option>"),
               $("<label></label>", { for: "dataSubtypeId", text: "Data Subtype:" }),
               $("<select></select>", {
                   name: "dataSubtypeId",
-                  title: "MatcherDataSubtype"
+                  title: "MatchersDataSubtype"
               }).append("<option>Loading...</option>"),
               $("<label></label>", {
                   for: "dataUnitTypeId",
@@ -282,7 +287,7 @@ function showAddObjectForm(parent, type) {
               }),
               $("<select></select>", {
                   name: "dataUnitTypeId",
-                  title: "MatcherDataUnitType"
+                  title: "MatchersDataUnitType"
               }).append("<option>Loading...</option>"),
               $("<label></label>", {
                   for: "parentSpaceId",

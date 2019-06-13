@@ -1,4 +1,4 @@
-:root {
+﻿:root {
     --main-black: rgb(0,0,0);
     --main-white: rgb(255,255,255);
     --main-dark-grey: rgb(31,31,31);
@@ -6,20 +6,12 @@
     --main-light-grey: rgb(55,55,55);
     --main-lighter-grey: rgb(207,207,207);
     --main-light-blue: rgb(0,139,245);
-
     --main-blue: rgb(0,120,212);
---main-green:rgb(211, 225, 49);
-
-
-
-
-
-
-    
+    --main-green: rgb(211, 225, 49);
     --main-dark-purple: rgb(53,29,93);
     --main-purple: rgb(92,45,145);
     --main-magenta: rgb(180, 0, 158);
-    --main-blue-green:rgb(20, 166, 146);
+    --main-blue-green: rgb(20, 166, 146);
     --main-green: rgb(16,124,16);
     --main-gold: rgb(255,185,0);
     --main-red: rgb(168,0,0);
@@ -27,8 +19,8 @@
     --main-glyph-space: "\E774";
     --main-glyph-device: "\F22C";
     --main-glyph-sensor: "\EC4A";
-    --main-glyph-userdefinedfunctions: "\EC4A";
-    --main-glyph-matchers: "\uE71C";
+    --main-glyph-userdefinedfunctions: "\E771";
+    --main-glyph-matchers: "\E71C";
     --main-glyph-check: "\E001";
     --main-glyph-add: "\E109";
     --main-glyph-delete: "\E107";
@@ -948,10 +940,10 @@ section.welcome h3 {
         content: "\EC4A";
     }
     .drawer header.userdefinedfunctions h2::before {
-        content: "\EC4A";
+        content: "\E771";
     }
     .drawer header.matchers h2::before {
-        content: "\uE71C";
+        content: "\E71C";
     }
 
 .drawer header ul.action-menu {
@@ -1105,12 +1097,12 @@ section.drawer-content > div {
     .drawer tbody td.sensor::before {
         content: "\EC4A";
     }
-    .drawer tbody td.userdefinedfunctions::before {
-            content: "\uE771";
+        .drawer tbody td.userdefinedfunctions::before {
+            content: "\E771";
         }
 
     .drawer tbody td.matchers::before {
-            content: "\uE71C";
+            content: "\E71C";
         }
 
     .drawer table.collapsed caption::after {
