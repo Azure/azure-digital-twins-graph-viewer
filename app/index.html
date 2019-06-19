@@ -20,16 +20,23 @@
     <script src="scripts/infopanel.js"></script>
     <script src="scripts/graph.js"></script>
     <script src="scripts/spaces.js"></script>
+    <script src="node_modules/@azure/ms-rest-js/dist/msRest.browser.js"></script>
+    <script src="node_modules/@azure/ms-rest-azure-js/dist/msRestAzure.js"></script>
+    <script src="node_modules/@azure/ms-rest-browserauth/dist/msAuth.js"></script>
+    <script src="node_modules/@azure/arm-monitor/dist/arm-monitor.js"></script>
+    <script src="scripts/auth.js"></script>
     <script type="text/javascript">
+
+
 
         $(function () {
             // try to populate inputs from config from storage
             prepopulateInputs();
 
-            if(getTwinsInstanceRoot() && getTwinsTenantId() && getTwinsClientId()){
+            if (getTwinsInstanceRoot() && getTwinsTenantId() && getTwinsClientId()) {
                 authenticate();
             }
-            
+
             // If the user is logged in, let make sure we set everything.
             if (user) {
                 // Hide the welcome message and show the visualizer div that holds the visualization.
@@ -41,7 +48,7 @@
                 $("#loginContainer")
                     .addClass("signed-in")
                     .append("<ul id=\"loginMenu\"><li id=\"signOut\">Sign Out</li></ul>")
-                    .click(function() {
+                    .click(function () {
                         $("#loginContainer").toggleClass("selected");
                         $("#loginMenu").toggle();
                     });
@@ -50,10 +57,10 @@
                 $("#signOut").click(function () { logout(); });
 
                 // Toggle for the drop down down Show menu
-                $("#showNodesButton").click(function() {
+                $("#showNodesButton").click(function () {
                     $(this).toggleClass("selected").find("ul").toggle();
                 });
-                
+
                 // Refresh the data if the refresh button is clicked.
                 $("#refreshButton").click(function () { refreshData(); });
 
@@ -67,26 +74,26 @@
 
                 // Hide the info panel when the close button is clicked.
                 $("#infoCloseButton").click(function () { hideInfoPanel(); });
-                
-                $("#objectAddButton").click(function() { showAddObjectForm(selectedNode, "space"); });
-                $("#objectAddDeviceButton").click(function() { showAddObjectForm(selectedNode, "device"); });
-                $("#objectAddSensorButton").click(function() { showAddObjectForm(selectedNode, "sensor"); });
+
+                $("#objectAddButton").click(function () { showAddObjectForm(selectedNode, "space"); });
+                $("#objectAddDeviceButton").click(function () { showAddObjectForm(selectedNode, "device"); });
+                $("#objectAddSensorButton").click(function () { showAddObjectForm(selectedNode, "sensor"); });
                 $("#objectAddUserDefinedFunctionsButton").click(function () { showAddObjectForm(selectedNode, "userdefinedfunctions"); });
                 $("#objectAddMatcherButton").click(function () { showAddObjectForm(selectedNode, "matchers"); });
-                $("#objectEditButton").click(function() { showEditObjectForm(selectedNode); });
-                $("#objectDeleteButton").click(function() { showDeleteObjectForm(selectedNode); });
+                $("#objectEditButton").click(function () { showEditObjectForm(selectedNode); });
+                $("#objectDeleteButton").click(function () { showDeleteObjectForm(selectedNode); });
 
-                $("form").submit(function(e) { 
+                $("form").submit(function (e) {
                     e.preventDefault();
                     submitObjectForm($(this));
                 })
 
-                $("input[type='reset']").click(function() {
+                $("input[type='reset']").click(function () {
                     hideObjectForm();
                 });
 
-                // Show sub-menu actions. 
-                $("#showSubMenu > li").click(function() {
+                // Show sub-menu actions.
+                $("#showSubMenu > li").click(function () {
                     if ($(this).hasClass("selected")) {
                         $(this).removeClass("selected").nextAll().removeClass("selected");
                     } else {
@@ -99,7 +106,7 @@
                 // Refresh the data for the initial load.
                 // This is a workaround to make sure the loading of data happens only after the ADAL redirects.
                 // There has to be a better solution... :)
-                setTimeout(function () { 
+                setTimeout(function () {
                     refreshData();
                 }, 2500);
 
@@ -107,29 +114,30 @@
                 // Hide the visualizer section
                 $("#visualizer").hide();
                 // Login the user.
-                $("#loginContainer").click(function() { login(); });
+                $("#loginContainer").click(function () { login(); });
             }
 
             // Hide the alert when clicked.
-            $("#alert").click(function() {
+            $("#alert").click(function () {
                 $("#alert").toggleClass("show");
             })
 
         });
 
-        function prepopulateInputs(){
+        function prepopulateInputs() {
             var state = loadSavedStateFromStorage();
-            if(state.url){
+            if (state.url) {
                 $("#twinsUrl").val(state.url);
             }
-            if(state.tenantId){
+            if (state.tenantId) {
                 $("#twinsTenantId").val(state.tenantId);
             }
-            if(state.clientId){
+            if (state.clientId) {
                 $("#twinsClientId").val(state.clientId);
             }
         }
-    </script>
+
+/**/</script>
 
 
 </head>
@@ -142,8 +150,7 @@
             <h1>Azure Digital Twins Graph Viewer</h1>
             <div class="top-header-login" id="loginContainer">
                 <div>
-                    <picture role="img" aria-label="Microsoft profile picture">
-                    </picture>
+                    <picture role="img" aria-label="Microsoft profile picture"></picture>
                 </div>
                 <div>
                     <h5 id="username">Sign In</h5>
@@ -151,7 +158,7 @@
             </div>
         </div>
     </header>
-    <main class="main-area">    
+    <main class="main-area">
         <!-- Alert DIV placeholder. -->
         <div id="alert">
             <h2>Error</h2>
@@ -168,25 +175,28 @@
         </section>
 
         <section id="twinsConfig" class="twins-config">
-                <div id="twinsConfigWrapper" class="twins-config-wrapper">
-                        <ul>
-                            <li class="list-item" style="">
-                                <label class="twins-config-label">Azure Digital Twins Instance Root Url
-                                <input id="twinsUrl" type="text" placeholder="https://[instancename].[region].azuresmartspaces.net/"/>
-                                </label>
-                            </li>
-                            <li class="list-item" style="">
-                                <label class="twins-config-label">Tenant Id
-                                <input id="twinsTenantId" type="text" placeholder="00000000-0000-0000-0000-000000000000"/>
-                                </label>
-                            </li>
-                            <li class="list-item" style="">
-                                <label class="twins-config-label">Client Id
-                                <input id="twinsClientId" type="text" placeholder="00000000-0000-0000-0000-000000000000"/>
-                                </label>
-                            </li>
-                        </ul>
-                </div>
+            <div id="twinsConfigWrapper" class="twins-config-wrapper">
+                <ul>
+                    <li class="list-item" style="">
+                        <label class="twins-config-label">
+                            Azure Digital Twins Instance Root Url
+                            <input id="twinsUrl" type="text" placeholder="https://[instancename].[region].azuresmartspaces.net/" />
+                        </label>
+                    </li>
+                    <li class="list-item" style="">
+                        <label class="twins-config-label">
+                            Tenant Id
+                            <input id="twinsTenantId" type="text" placeholder="00000000-0000-0000-0000-000000000000" />
+                        </label>
+                    </li>
+                    <li class="list-item" style="">
+                        <label class="twins-config-label">
+                            Client Id
+                            <input id="twinsClientId" type="text" placeholder="00000000-0000-0000-0000-000000000000" />
+                        </label>
+                    </li>
+                </ul>
+            </div>
         </section>
 
         <!-- Main Visualizer stuff -->
@@ -194,68 +204,68 @@
             <div class="graph-container">
                 <nav>
                     <!-- Breadcrumb to be populated once a node is selected -->
-                    <ol id="breadCrumbList" class="breadcrumb">
-                    </ol>
-    
+                    <ol id="breadCrumbList" class="breadcrumb"></ol>
+
                     <!-- Action Menu -->
                     <ul id="action-menu" class="action-menu">
                         <li id="apiButton">Execute API Call</li>
                         <li id="addRootButton" class="addRoot" style="display: none;">Create Root Space</li>
-                        <li id="showNodesButton" class="show">Show
+                        <li id="showNodesButton" class="show">
+                            Show
                             <ul id="showSubMenu" class="showSubMenu">
                                 <li class="selected"><span class="space">Spaces</span></li>
                                 <li><span class="device">Devices</span></li>
                                 <li><span class="sensor">Sensors</span></li>
-                                <li><span class="userdefinedfunctions">UserDefinedFunctions</span></li>
+                                <li><span class="userdefinedfunctions">User-defined Functions</span></li>
                                 <li><span class="matchers">Matchers</span></li>
-                                
+
 
                             </ul>
                         </li>
                         <li id="refreshButton" class="refresh">Refresh</li>
-                    </ul>                
+                    </ul>
                 </nav>
 
                 <!-- Container that will hold the graph -->
                 <div id="graphContent" class="graph-canvas">
-                    <!-- Loading icon when graph is loading. -->    
+                    <!-- Loading icon when graph is loading. -->
                     <img src="images/ajax-loader.gif" id="graphLoaderIcon" class="loaderIcon" style="display: none;" />
                 </div>
             </div>
 
             <!-- API panel to execute API calls -->
             <aside id="apiPanel" class="drawer">
-                    <header>
-                            <h2 class="api">Digital Twin API</h2>
-                            <span class="drawer-close" id="apiCloseButton"></span>
-                    </header>
-                    <section id="apiPanelContent" class="drawer-content">
-                        <!-- Drawer for the form. -->
-                        <div id="apiPanelDrawer" class="drawer-slide-over">
-                            <form name="apiForm">
-                                <h3>Call (excluding base url)</h3>
-                                <div class="form-container">
-                                    <label>API (<a href="https://docs.westcentralus.azuresmartspaces.net/management/swagger" target="_new">Swagger</a>)</label>
-                                    <input type="text" name="apiCall"/>
-                                    <label>Method</label>
-                                    <select name="apiMethod">
-                                        <option>GET</option>
-                                        <option>PUT</option>
-                                        <option>POST</option>
-                                        <option>DELETE</option>
-                                        <option>PATCH</option>
-                                    </select>
-                                    <label>JSON Input</label>
-                                    <textarea rows="3" name="apiJSON" class="json"></textarea>
-                                    <label>JSON Output</label>
-                                    <textarea rows="7" name="apiJSONOutput" id="apiJSONOutput" disabled="true" class="json"></textarea>
-                                </div>
-                                <div class="button-container">  
-                                    <input type="submit" class="button confirm" value="Execute"> 
-                                </div>
-                            </form>
-                        </div>
-                    </section>
+                <header>
+                    <h2 class="api">Digital Twin API</h2>
+                    <span class="drawer-close" id="apiCloseButton"></span>
+                </header>
+                <section id="apiPanelContent" class="drawer-content">
+                    <!-- Drawer for the form. -->
+                    <div id="apiPanelDrawer" class="drawer-slide-over">
+                        <form name="apiForm">
+                            <h3>Call (excluding base url)</h3>
+                            <div class="form-container">
+                                <label>API (<a href="https://docs.westcentralus.azuresmartspaces.net/management/swagger" target="_new">Swagger</a>)</label>
+                                <input type="text" name="apiCall" />
+                                <label>Method</label>
+                                <select name="apiMethod">
+                                    <option>GET</option>
+                                    <option>PUT</option>
+                                    <option>POST</option>
+                                    <option>DELETE</option>
+                                    <option>PATCH</option>
+                                </select>
+                                <label>JSON Input</label>
+                                <textarea rows="3" name="apiJSON" class="json"></textarea>
+                                <label>JSON Output</label>
+                                <textarea rows="7" name="apiJSONOutput" id="apiJSONOutput" disabled="true" class="json"></textarea>
+                            </div>
+                            <div class="button-container">
+                                <input type="submit" class="button confirm" value="Execute">
+                            </div>
+                        </form>
+                    </div>
+                </section>
             </aside>
 
             <!-- Info panel that provides more info on the selected node -->
@@ -269,7 +279,7 @@
                         <li id='objectAddDeviceButton' class='add'>Add Device</li>
                         <li id='objectAddSensorButton' class='addSensor'>Add Sensor</li>
 
-                        <li id='objectAddUserDefinedFunctionsButton' class='addUDF'>Add UDF</li>
+                        <li id='objectAddUserDefinedFunctionsButton' class='addUDF'>Add User-defined Functions</li>
                         <li id='objectAddMatchersButton' class='addMatchers'>Add Matcher</li>
 
                         <li id='objectEditButton' class='edit'>Edit</li>
@@ -288,8 +298,8 @@
                             <div class="form-container">
                                 <!-- we will generate the add form here. -->
                             </div>
-                            <div class="button-container">  
-                                <input type="submit" class="button confirm" value="Create"> 
+                            <div class="button-container">
+                                <input type="submit" class="button confirm" value="Create">
                                 <input type="reset" class="button cancel" value="Cancel">
                             </div>
                         </form>
@@ -299,7 +309,7 @@
                                 <!-- we will generate the edit form here. -->
                             </div>
                             <div class="button-container">
-                                <input type="submit" class="button confirm" value="Save"> 
+                                <input type="submit" class="button confirm" value="Save">
                                 <input type="reset" class="button cancel" value="Cancel">
                             </div>
                         </form>
@@ -311,17 +321,17 @@
                                 <tbody></tbody>
                             </table>
                             <div class="button-container">
-                                <input type="submit" class="button confirm" value="Delete"> 
+                                <input type="submit" class="button confirm" value="Delete">
                                 <input type="reset" class="button cancel" value="Cancel">
                             </div>
                         </form>
-                    </div>      
+                    </div>
                 </section>
             </aside>
         </section>
     </main>
 
-    <footer class="footer">        
+    <footer class="footer">
         <div class="footer-container">
             <ol>
                 <li><a href="https://www.azure.com" target="_new">Azure</a></li>

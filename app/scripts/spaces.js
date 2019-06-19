@@ -4,7 +4,7 @@
 // An empty array that will hold all the nodes to be displayed.
 var stagedNodes = [];
 // An array that has the object types that should be loaded from Digital Twins for the graph.
-var objectTypesToLoad = ["space", "device", "sensor","matchers", "userdefinedfunctions"];
+var objectTypesToLoad = ["space", "device", "sensor", "matchers", "userdefinedfunctions"];
 var oDataTop = 999;
 // Dictionary to keep track of oDataSkip count for each object type
 var oDataSkips = {}
@@ -36,28 +36,28 @@ function executeApiDigitalTwinJSON(api, command, json, fComplete) {
                 case "PUT":
                     ajaxJSON.data = json;
                     ajaxJSON.contentType = "application/json";
-                break;
+                    break;
                 case "PATCH":
                     ajaxJSON.data = json;
                     ajaxJSON.contentType = "application/json";
-                break;
+                    break;
                 case "POST":
                     ajaxJSON.data = json;
                     ajaxJSON.contentType = "application/json";
-                break;
+                    break;
                 case "DELETE":
                     ajaxJSON.contentType = "application/json";
-                break;
+                    break;
             }
 
             // Make the call.
-            $.ajax( ajaxJSON ).success(function (data) {
+            $.ajax(ajaxJSON).success(function (data) {
                 fComplete(data);
             }).error(function (err) {
                 showAlert("error",
-                "API Execution",
-                "API error: " + JSON.stringify(err),
-                false);
+                    "API Execution",
+                    "API error: " + JSON.stringify(err),
+                    false);
             });
         }
     );
@@ -187,10 +187,9 @@ function getRequestUrlWithoDataSkip(type) {
         case "sensor":
             url = url + "sensors" + "?$top=" + oDataTop + "&$skip=" + oDataSkips[type];
             break;
-       case "userdefinedfunctions":
+        case "userdefinedfunctions":
             url = url + "userdefinedfunctions" + "?$top=" + oDataTop + "&$skip=" + oDataSkips[type];
             break;
-       
         case "matchers":
             url = url + "matchers" + "?$top=" + oDataTop + "&$skip=" + oDataSkips[type];
             break;
@@ -283,10 +282,9 @@ function postDigitalTwinsObject(objectType, jsonData, fComplete) {
                 case "sensor":
                     url = url + "sensors";
                     break;
-               case "userdefinedfunctions":
+                case "userdefinedfunctions":
                     url = url + "userdefinedfunctions";
                     break;
-                  
                 case "matchers":
                     url = url + "matchers";
                     break;
@@ -334,10 +332,9 @@ function patchDigitalTwins(objectId, objectType, jsonData, fComplete) {
                 case "sensor":
                     url = url + "sensors/";
                     break;
-               case "userdefinedfunctions":
+                case "userdefinedfunctions":
                     url = url + "userdefinedfunctions/";
                     break;
-                  
                 case "matchers":
                     url = url + "matchers/";
                     break;
@@ -393,7 +390,6 @@ function deleteDigitalTwinsObject(objectId, objectType, fComplete) {
                 case "userdefinedfunctions":
                     url = url + "userdefinedfunctions/";
                     break;
-                   
                 case "matchers":
                     url = url + "matchers/";
                     break;
@@ -447,7 +443,6 @@ function showGraphData(data) {
             case "userdefinedfunctions":
                 var parent = dataMap[node.spaceId];
                 break;
-                
             case "matchers":
                 var parent = dataMap[node.spaceId];
                 break;
@@ -520,14 +515,14 @@ function addRootSpace() {
     // Create the deferred object
     var deferred = $.Deferred();
 
-    addObject("space", rootspace, function(data) {
-        if (data){
+    addObject("space", rootspace, function (data) {
+        if (data) {
             alert(JSON.stringify(data));
             var resource = {
                 "Type": "IoTHub",
                 "SpaceId": data.id
             }
-            addObject("resource", resource, function(s) {
+            addObject("resource", resource, function (s) {
                 refreshData();
                 deferred.resolve(s);
             });
@@ -636,11 +631,11 @@ function objectDragAction(node, target, fEndDrag) {
     // Make the call
     $("#graphLoaderIcon").show();
     var updateDigitalTwins = $.Deferred();
-    patchDigitalTwins(node.id, node.type, jsonData, function (status, response) { 
+    patchDigitalTwins(node.id, node.type, jsonData, function (status, response) {
         if (response)
-            updateDigitalTwins.resolve(response.error.message); 
+            updateDigitalTwins.resolve(response.error.message);
         else
-            updateDigitalTwins.resolve(status); 
+            updateDigitalTwins.resolve(status);
     });
 
     // Call is done, let's see the result
