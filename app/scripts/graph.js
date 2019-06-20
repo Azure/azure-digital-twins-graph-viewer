@@ -617,7 +617,13 @@ function populateBreadCrumb(d) {
     $("#breadCrumbList").empty();
     cycle(d);
     function cycle(d) {
-        $("#breadCrumbList").prepend("<li><a>" + d.label + "</a></li>");
+        if (d.label != "") {
+            $("#breadCrumbList").prepend("<li><a>" + d.label + "</a></li>");
+        }
+        else {
+            $("#breadCrumbList").prepend("<li><a>" + d.name + "</a></li>");
+        }
+      
         if (d.parent) {
             cycle(d.parent);
         }
