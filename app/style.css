@@ -422,8 +422,19 @@ ul.action-menu {
         ul.action-menu li.show::before {
             content: "\E9E9"
         }
+        ul.action-menu li.Addshow::before {
+            content: var(--main-glyph-add);
+        }
 
         ul.action-menu li.show::after {
+            font-family: "Segoe MDL2 Assets";
+            margin-left: 4px;
+            font-size: 10px;
+            top: +2px;
+            position: relative;
+            content: "\E019"
+        }
+        ul.action-menu li.Addshow::after {
             font-family: "Segoe MDL2 Assets";
             margin-left: 4px;
             font-size: 10px;
@@ -547,6 +558,29 @@ ul.action-menu {
             ul.action-menu li ul.showSubMenu li span.matchers::before {
                 content: var(--main-glyph-matchers)
             }
+            ul.action-menu li ul.AddshowSubMenu li span::before {
+                font-family: "Segoe MDL2 Assets";
+                margin-right: 8px;
+                top: 3px;
+                position: relative;
+            }
+
+            ul.action-menu li ul.AddshowSubMenu li .add::before {
+                content:var(--main-glyph-add);
+            }
+            ul.action-menu li ul.AddshowSubMenu li .addSensor::before {
+                content: var(--main-glyph-add);
+            }
+            ul.action-menu li ul.AddshowSubMenu li .addSensor::before {
+                content: var(--main-glyph-add);
+            }
+            ul.action-menu li ul.AddshowSubMenu li .addUDF::before {
+                content: var(--main-glyph-add);
+            }
+            ul.action-menu li ul.AddshowSubMenu li .addMatchers::before {
+                content: var(--main-glyph-add);
+            }
+
 
             ul.action-menu li ul li:hover {
                 background-color: rgba(255,255,255,0.2);
@@ -1193,3 +1227,4 @@ section.drawer-content {
     ::-webkit-scrollbar-thumb:hover {
         background: #888;
     }
+
