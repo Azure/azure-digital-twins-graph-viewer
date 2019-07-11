@@ -30,39 +30,32 @@ function showInfoPanel(d) {
     $("#infoPanel").addClass("open"); // Open the panel
 
     if (d.type == "space") {
-        $("#infoPanel > header > ul.action-menu >li.Addshow > ul.AddshowSubMenu > li.add").show();
-        $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu > li.addSensor").hide();
-        $("#infoPanel > header > ul.action-menu >li.Addshow > ul.AddshowSubMenu > li.addUDF").show();
-        $("#infoPanel > header > ul.action-menu >li.Addshow > ul.AddshowSubMenu > li.addMatchers").show();
+        $("#infoPanel > header > ul.action-menu > li.add").show();
+        $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
+        $("#infoPanel > header > ul.action-menu > li.addUDF").show();
+        $("#infoPanel > header > ul.action-menu > li.addMatchers").show();
     }
     else if (d.type == "matchers") {
-        $("#infoPanel > header > ul.action-menu > li.Addshow").hide();
-        $("#infoPanel > header > ul.action-menu >li.Addshow > ul.AddshowSubMenu > li.add").hide();
-        $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu >li.addSensor").hide();
-        $("#infoPanel > header > ul.action-menu >li.Addshow > ul.AddshowSubMenu > li.addUDF").hide();
-        $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu >li.addMatchers").hide();
+        $("#infoPanel > header > ul.action-menu > li.add").hide();
+        $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
+        $("#infoPanel > header > ul.action-menu > li.addUDF").hide();
+        $("#infoPanel > header > ul.action-menu > li.addMatchers").hide();
     }
     else if (d.type == "userdefinedfunctions") {
-        $("#infoPanel > header > ul.action-menu > li.Addshow").hide();
-        $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu >li.add").hide();
-        $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu >li.addSensor").hide();
-        $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu >li.addMatchers").hide();
-        $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu >li.addUDF").hide();
+        $("#infoPanel > header > ul.action-menu > li.add").hide();
+        $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
+        $("#infoPanel > header > ul.action-menu > li.addMatchers").hide();
+        $("#infoPanel > header > ul.action-menu > li.addUDF").hide();
     }
 
     else {
-        $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu >li.add").hide();
-        $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu >li.addMatchers").hide();
-        $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu >li.addUDF").hide();
-        if (d.type == "device") {
-            $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu >li.addSensor").show();
-        }
-        else {
- $("#infoPanel > header > ul.action-menu > li.Addshow").hide();
- $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu >li.addSensor").hide();
-           
-        }
-           
+        $("#infoPanel > header > ul.action-menu > li.add").hide();
+        $("#infoPanel > header > ul.action-menu > li.addMatchers").hide();
+        $("#infoPanel > header > ul.action-menu > li.addUDF").hide();
+        if (d.type == "device")
+            $("#infoPanel > header > ul.action-menu > li.addSensor").show();
+        else
+            $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
     }
 
 
@@ -103,7 +96,6 @@ function hideInfoPanel() {
     if (selectedNode) {
         deselectNode(selectedNode, true);
     }
-    $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu").hide();
 }
 
 // Function that shows the Add New Object Form.
@@ -859,7 +851,6 @@ function jsonToTable(json, tableName) {
         default:
             break;
     }
-
     $("#infoPanelContent> div.info").append(table);
 }
 
