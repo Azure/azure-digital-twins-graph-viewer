@@ -30,33 +30,33 @@ function showInfoPanel(d) {
     $("#infoPanel").addClass("open"); // Open the panel
 
     if (d.type == "space") {
-        $("#infoPanel > header > ul.action-menu > li.add").show();
-        $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
-        $("#infoPanel > header > ul.action-menu > li.addUDF").show();
-        $("#infoPanel > header > ul.action-menu > li.addMatchers").show();
+        $("#infoPanel > header > ul.action-menu >li.Addshow > ul.AddshowSubMenu > li.add").show();
+        $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu > li.addSensor").hide();
+        $("#infoPanel > header > ul.action-menu >li.Addshow > ul.AddshowSubMenu > li.addUDF").show();
+        $("#infoPanel > header > ul.action-menu >li.Addshow > ul.AddshowSubMenu > li.addMatchers").show();
     }
     else if (d.type == "matchers") {
-        $("#infoPanel > header > ul.action-menu > li.add").hide();
-        $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
-        $("#infoPanel > header > ul.action-menu > li.addUDF").hide();
-        $("#infoPanel > header > ul.action-menu > li.addMatchers").hide();
+        $("#infoPanel > header > ul.action-menu > li.Addshow").hide();
     }
     else if (d.type == "userdefinedfunctions") {
-        $("#infoPanel > header > ul.action-menu > li.add").hide();
-        $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
-        $("#infoPanel > header > ul.action-menu > li.addMatchers").hide();
-        $("#infoPanel > header > ul.action-menu > li.addUDF").hide();
+        $("#infoPanel > header > ul.action-menu > li.Addshow").hide();
+        $("#infoPanel > header > ul.action-menu >li.Addshow > ul.AddshowSubMenu > li.addUDF").show();
     }
 
     else {
-        $("#infoPanel > header > ul.action-menu > li.add").hide();
-        $("#infoPanel > header > ul.action-menu > li.addMatchers").hide();
-        $("#infoPanel > header > ul.action-menu > li.addUDF").hide();
-        if (d.type == "device")
-            $("#infoPanel > header > ul.action-menu > li.addSensor").show();
-        else
-            $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
+        $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu > li.add").hide();
+        $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu > li.addMatchers").hide();
+        $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu > li.addUDF").hide();
+        if (d.type == "device") {
+            $("#infoPanel > header > ul.action-menu > li.Addshow > ul.AddshowSubMenu > li.addSensor").show();
+        }
+        else {
+            $("#infoPanel > header > ul.action-menu > li.Addshow").hide();
+
+        }
+
     }
+
 
 
     // Let's get all the info from the selected element by firing a new API request.
@@ -783,6 +783,7 @@ function hideObjectForm() {
 
 // Function that will create the tables from the json.
 function jsonToTable(json, tableName) {
+    
     if (!json || json.length < 1) return;
     // Create the basic elements
     var table = $("<table class='collapsable'></table>");
@@ -848,6 +849,8 @@ function jsonToTable(json, tableName) {
         case "JSON":
             tableBody.append("<tr><td><textarea rows='10' disabled='true'>" + JSON.stringify(json, undefined, 4) + "</textarea></td></tr>");
             break;
+        case "Metrics":
+            tableBody.append("<tr><td><\td><\tr>");
         default:
             break;
     }

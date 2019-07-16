@@ -56,8 +56,13 @@
                 $("#showNodesButton").click(function () {
                     $(this).toggleClass("selected").find("ul").toggle();
                 });
-                   // Toggle for the drop down Add Node menu
+                // Toggle for the drop down Add Node menu
                 $("#addNodesButton").click(function () {
+                    $(this).toggleClass("selected").find("ul").toggle();
+                });
+
+                  // Toggle for the drop down Add Node menu
+                $("#displayMetric").click(function () {
                     $(this).toggleClass("selected").find("ul").toggle();
                 });
 
@@ -222,6 +227,14 @@
 
                             </ul>
                         </li>
+                        <li id="displayMetric" class="displayMetric">Display Metrics
+                            <ul id="displayMetricsSubMenu" class="displayMetricsSubMenu">
+                                <li class="selected"><span class="apiLatency">API Latency</span></li>
+                                <li><span class="functionExecutionLatency">Function Execution Latency</span></li>
+                                <li><span class="processingLatency">Processing Latency</span></li>
+                            </ul>
+                        </li>
+
                         <li id="refreshButton" class="refresh">Refresh</li>
                     </ul>
                 </nav>
@@ -279,13 +292,14 @@
                             Add Node
                             <ul id="AddshowSubMenu" class="AddshowSubMenu">
                                 <li id='objectAddButton' class='add'>Child Space</li>
-                                <li id='objectAddDeviceButton' class='addDevice'>Device</li>
+                                <li id='objectAddDeviceButton' class='add'>Device</li>
                                 <li id='objectAddSensorButton' class='addSensor'>Sensor</li>
 
                                 <li id='objectAddUserDefinedFunctionsButton' class='addUDF'>User-defined Functions</li>
                                 <li id='objectAddMatchersButton' class='addMatchers'>Matcher</li>
                             </ul>
                         </li>
+                        
                         <li id='objectEditButton' class='edit'>Edit</li>
                         <li id='objectDeleteButton' class='delete'>Delete</li>
                     </ul>
