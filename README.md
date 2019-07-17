@@ -43,18 +43,18 @@ Running this locally by opening the files is not supported, since the login redi
 
 After deploying, you should be able to navigate to your deployment and sign in to the Graph Viewer.
 When you open the Graph Viewer webpage, enter the following information in the text boxes:
-- twinsInstanceRoot: This is the full URL of your Azure Digital Twins instance, ending in `azuresmartspaces.net/`.
-- tenant: This is the name or id of your Azure tenant, for example `contoso.onmicrosoft.com` or `6f68d89e-8f99-4798-8850-a5d557c3341e`
+- twinsInstanceRoot: This is the full URL of your Azure Digital Twins instance, ending in `azuresmartspaces.net`.
+- tenant: This is the name or id of your Azure tenant, for example `6f68d89e-8f99-4798-8850-a5d557c3341e`
 - clientId: This is the application id of the Azure Active Directory application you created in the previous step. It is formatted as a Guid.
 
 ## Run as Docker container
 
-If you want to run the the Graph Viewer as Docker container, you can execute the following commands:
+If you want to run the the Graph Viewer as Docker container on your machine, you can execute the following commands from within the root directory of the repository:
 
 - `docker build . -t azure-digital-twins-viewer`
 - `docker run -p 8080:80 azure-digital-twins-viewer`
 
-Go to http://localhost:8080
+Open your browser and go to http://localhost:8080 to view the Graph viewer locally. 
 
 # Contributing
 
