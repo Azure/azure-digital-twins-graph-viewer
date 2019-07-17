@@ -30,7 +30,7 @@ In order to connect to Azure Digital Twins, the Graph Viewer must be registered 
 4. Go to Settings / Permissions and select the Azure Digital Twins service from the API list. Specify 'Read/Write Access' as the required permission. 
 <img src="media/aadapiscreen.png" width="500px" />
 5. Confirm the screen and click 'Grant permissions.' <br />
-6. Click the 'Edit Manifest' button. In the manifest, change the value for the 'oauth2AllowImplicitFlow' setting to 'true' and save.  
+6. Click the 'Edit Manifest' button on the app blade. In the manifest, change the value for the 'oauth2AllowImplicitFlow' setting to 'true' and save.  
 <img src="media/manifest.png" width="450px" />
 
 
@@ -69,10 +69,3 @@ provided by the bot. You will only need to do this once across all repos using o
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
-## Contributors
-
-Joost ten Kattelaar<br />
-Niels Buit<br />
-Arjen Everaert<br />
-Jordan Beland<br />
