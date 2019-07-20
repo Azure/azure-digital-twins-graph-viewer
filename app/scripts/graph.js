@@ -418,8 +418,8 @@ function updateGraphVisualizer(source, animated) {
                 case "space": return "";
                 case "device": return "";
                 case "sensor": return "";
-                case "userdefinedfunctions": return "";
-                case "matchers": return "";
+                case "userdefinedfunctions": return "";
+                case "matchers": return "";
                 default: return "";
             }
         })

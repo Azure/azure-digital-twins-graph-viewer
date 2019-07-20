@@ -6,19 +6,22 @@
     --main-light-grey: rgb(55,55,55);
     --main-lighter-grey: rgb(207,207,207);
     --main-light-blue: rgb(0,139,245);
-    --main-red: #118DFF;
-    --main-yellow: #E04854;
-    --main-magenta: #C83D95;
-    --main-blue: #FF9254;
-    --main-green: #9911B0;
+    --main-blue: rgb(0,120,212);
     --main-dark-purple: rgb(53,29,93);
+    --main-purple: rgb(92,45,145);
+    --main-magenta: rgb(180, 0, 158);
+    --main-green: rgb(16,124,16);
+    --main-scarlet: #E04854;
+    --main-orange: #FF9254;
     --main-gold: rgb(255,185,0);
+    --main-red: rgb(168,0,0);
+
     --main-glyph-api: "\E774";
     --main-glyph-space: "\E774";
     --main-glyph-device: "\F22C";
     --main-glyph-sensor: "\EC4A";
-    --main-glyph-userdefinedfunctions: "\EB7E";
-    --main-glyph-matchers: "\ECCB";
+    --main-glyph-userdefinedfunctions: "\EF58";
+    --main-glyph-matchers: "\E7B7";
     --main-glyph-check: "\E001";
     --main-glyph-add: "\E109";
     --main-glyph-delete: "\E107";
@@ -27,7 +30,7 @@
     --main-glyph-chev-up: "\E96D";
     --main-glyph-chev-right: "\E970";
     --main-glyph-chev-lef: "\E96F";
-    --main-glyph-metric:"\E9D2";
+    --main-glyph-metric: "\E9D2";
 }
 
 input.button {
@@ -433,23 +436,11 @@ ul.action-menu {
             content: "\E019"
         }
 
-        ul.action-menu li.Addshow::before {
+        ul.action-menu li.addNode::before {
             content: var(--main-glyph-add);
         }
 
-        ul.action-menu li.Addshow::after {
-            font-family: "Segoe MDL2 Assets";
-            margin-left: 4px;
-            font-size: 10px;
-            top: +2px;
-            position: relative;
-            content: "\E019"
-        }
-        ul.action-menu li.displayMetric::before {
-            content: var(--main-glyph-metric);
-        }
-
-        ul.action-menu li.displayMetric::after {
+        ul.action-menu li.addNode::after {
             font-family: "Segoe MDL2 Assets";
             margin-left: 4px;
             font-size: 10px;
@@ -535,15 +526,14 @@ ul.action-menu {
             }
 
             ul.action-menu li ul.showSubMenu li span.userdefinedfunctions::before {
-                content: var(--main-glyph-userdefinedfunctions);
-
-              
+                content: var(--main-glyph-userdefinedfunctions);  
             }
 
             ul.action-menu li ul.showSubMenu li span.matchers::before {
                 content: var(--main-glyph-matchers)
             }
-            ul.action-menu li ul.AddshowSubMenu li span::before {
+
+            ul.action-menu li ul.addNodeSubMenu li span::before {
                 font-family: "Segoe MDL2 Assets";
                 margin-right: 8px;
                 top: 3px;
@@ -551,19 +541,19 @@ ul.action-menu {
             }
             
 
-            ul.action-menu li ul.AddshowSubMenu li.addDevice::before {
+            ul.action-menu li ul.addNodeSubMenu li.addDevice::before {
                 content: var(--main-glyph-add);
             }
 
-            ul.action-menu li ul.AddshowSubMenu li.addSensor::before {
+            ul.action-menu li ul.addNodeSubMenu li.addSensor::before {
                 content: var(--main-glyph-add);
             }
 
-            ul.action-menu li ul.AddshowSubMenu li.addUDF::before {
+            ul.action-menu li ul.addNodeSubMenu li.addUDF::before {
                 content: var(--main-glyph-add);
             }
 
-            ul.action-menu li ul.AddshowSubMenu li.addMatchers::before {
+            ul.action-menu li ul.addNodeSubMenu li.addMatchers::before {
                 content: var(--main-glyph-add);
             }
 
@@ -826,15 +816,15 @@ section.welcome {
 }
 
 .graph-canvas .node .device {
-    fill: var(--main-green);
+    fill: var(--main-purple);
 }
 
 .graph-canvas .node .space {
-    fill: var(--main-red);
+    fill: var(--main-blue);
 }
 
 .graph-canvas .node .api {
-    fill: var(--main-yellow);
+    fill: var(--main-green);
 }
 
 .graph-canvas .node .sensor {
@@ -842,11 +832,11 @@ section.welcome {
 }
 
 .graph-canvas .node .userdefinedfunctions {
-    fill: var(--main-blue);
+    fill: var(--main-orange);
 }
 
 .graph-canvas .node .matchers {
-    fill: var(--main-yellow);
+    fill: var(--main-scarlet);
 }
 
 .graph-canvas .node .nodeText {
@@ -910,15 +900,15 @@ section.welcome {
     }
 
         .drawer header.space {
-            background-color: var(--main-red);
+            background-color: var(--main-blue);
         }
 
         .drawer header.api {
-            background-color: var(--main-yellow);
+            background-color: var(--main-green);
         }
 
         .drawer header.device {
-            background-color: var(--main-green);
+            background-color: var(--main-purple);
         }
 
         .drawer header.sensor {
@@ -926,11 +916,11 @@ section.welcome {
         }
 
         .drawer header.userdefinedfunctions {
-            background-color: var(--main-blue);
+            background-color: var(--main-orange);
         }
 
         .drawer header.matchers {
-            background-color: var(--main-yellow);
+            background-color: var(--main-scarlet);
         }
 
         .drawer header h2 {
@@ -973,11 +963,11 @@ section.welcome {
         }
 
         .drawer header.userdefinedfunctions h2::before {
-            content: "\EB7E";
+            content: "\EF58";
         }
 
         .drawer header.matchers h2::before {
-            content: "\ECCB";
+            content: "\E7B7";
         }
 
         .drawer header ul.action-menu {
@@ -1133,11 +1123,11 @@ section.drawer-content {
         }
 
         .drawer tbody td.userdefinedfunctions::before {
-            content: "\EB7E";
+            content: "\EF58";
         }
 
         .drawer tbody td.matchers::before {
-            content: "\ECCB";
+            content: "\E7B7";
         }
 
 .drawer table.collapsed caption::after {

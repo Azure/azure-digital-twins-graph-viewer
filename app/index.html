@@ -61,11 +61,6 @@
                     $(this).toggleClass("selected").find("ul").toggle();
                 });
 
-                  // Toggle for the drop down Add Node menu
-                $("#displayMetric").click(function () {
-                    $(this).toggleClass("selected").find("ul").toggle();
-                });
-
                 // Refresh the data if the refresh button is clicked.
                 $("#refreshButton").click(function () { refreshData(); });
 
@@ -84,7 +79,7 @@
                 $("#objectAddDeviceButton").click(function () { showAddObjectForm(selectedNode, "device"); });
                 $("#objectAddSensorButton").click(function () { showAddObjectForm(selectedNode, "sensor"); });
                 $("#objectAddUserDefinedFunctionsButton").click(function () { showAddObjectForm(selectedNode, "userdefinedfunctions"); });
-                $("#objectAddMatcherButton").click(function () { showAddObjectForm(selectedNode, "matchers"); });
+                $("#objectAddMatchersButton").click(function () { showAddObjectForm(selectedNode, "matchers"); });
                 $("#objectEditButton").click(function () { showEditObjectForm(selectedNode); });
                 $("#objectDeleteButton").click(function () { showDeleteObjectForm(selectedNode); });
 
@@ -223,18 +218,8 @@
                                 <li><span class="sensor">Sensors</span></li>
                                 <li><span class="userdefinedfunctions">UserDefinedFunctions</span></li>
                                 <li><span class="matchers">Matchers</span></li>
-
-
                             </ul>
                         </li>
-                        <li id="displayMetric" class="displayMetric">Display Metrics
-                            <ul id="displayMetricsSubMenu" class="displayMetricsSubMenu">
-                                <li class="selected"><span class="apiLatency">API Latency</span></li>
-                                <li><span class="functionExecutionLatency">Function Execution Latency</span></li>
-                                <li><span class="processingLatency">Processing Latency</span></li>
-                            </ul>
-                        </li>
-
                         <li id="refreshButton" class="refresh">Refresh</li>
                     </ul>
                 </nav>
@@ -288,13 +273,12 @@
                     <h2 class="space">Space</h2>
                     <span class="drawer-close" id="infoCloseButton"></span>
                     <ul class='action-menu'>
-                        <li id="addNodesButton" class="Addshow">
+                        <li id="addNodesButton" class="addNode">
                             Add Node
-                            <ul id="AddshowSubMenu" class="AddshowSubMenu">
+                            <ul id="addNodeSubMenu" class="addNodeSubMenu">
                                 <li id='objectAddButton' class='add'>Child Space</li>
                                 <li id='objectAddDeviceButton' class='add'>Device</li>
                                 <li id='objectAddSensorButton' class='addSensor'>Sensor</li>
-
                                 <li id='objectAddUserDefinedFunctionsButton' class='addUDF'>User-defined Functions</li>
                                 <li id='objectAddMatchersButton' class='addMatchers'>Matcher</li>
                             </ul>

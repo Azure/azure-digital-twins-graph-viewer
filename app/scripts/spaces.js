@@ -621,7 +621,7 @@ function objectDragAction(node, target, fEndDrag) {
     // Form the url and the body to send to smart spaces. 
     // This depends on the type of object to change, since they record their parent in a different way.
     var jsonData;
-    if (node.type == "device" ||node.name=="userdefinedfunction"||node.name=="matchers") {
+    if (node.type == "device" ||node.type=="userdefinedfunction"||node.type=="matchers") {
         jsonData = JSON.stringify({ "spaceId": target.id });
     }
     else if (node.type == "space") {
