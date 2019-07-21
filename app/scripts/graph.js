@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2013-2016, Rob Schmuecker
 All rights reserved.
 
@@ -418,8 +418,8 @@ function updateGraphVisualizer(source, animated) {
                 case "space": return "";
                 case "device": return "";
                 case "sensor": return "";
-                case "userdefinedfunctions": return "";
-                case "matchers": return "";
+                case "userdefinedfunctions": return "";
+                case "matchers": return "";
                 default: return "";
             }
         })
@@ -623,7 +623,7 @@ function populateBreadCrumb(d) {
         else {
             $("#breadCrumbList").prepend("<li><a>" + d.name + "</a></li>");
         }
-      
+
         if (d.parent) {
             cycle(d.parent);
         }
@@ -864,4 +864,3 @@ function pan(domNode, direction) {
         }, 50);
     }
 }
-

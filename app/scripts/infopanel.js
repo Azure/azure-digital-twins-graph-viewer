@@ -30,33 +30,38 @@ function showInfoPanel(d) {
     $("#infoPanel").addClass("open"); // Open the panel
 
     if (d.type == "space") {
-        $("#infoPanel > header > ul.action-menu > li.add").show();
-        $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
-        $("#infoPanel > header > ul.action-menu > li.addUDF").show();
-        $("#infoPanel > header > ul.action-menu > li.addMatchers").show();
+        $("#infoPanel > header > ul.action-menu > li.addNode").show();
+        $("#infoPanel > header > ul.action-menu > li.addNode > ul.addNodeSubMenu > li.add").show();
+        $("#infoPanel > header > ul.action-menu > li.addNode > ul.addNodeSubMenu > li.addSensor").hide();
+        $("#infoPanel > header > ul.action-menu > li.addNode > ul.addNodeSubMenu > li.addUDF").show();
+        $("#infoPanel > header > ul.action-menu > li.addNode > ul.addNodeSubMenu > li.addMatchers").show();
     }
     else if (d.type == "matchers") {
-        $("#infoPanel > header > ul.action-menu > li.add").hide();
-        $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
-        $("#infoPanel > header > ul.action-menu > li.addUDF").hide();
-        $("#infoPanel > header > ul.action-menu > li.addMatchers").hide();
+        $("#infoPanel > header > ul.action-menu > li.addNode").hide();
     }
     else if (d.type == "userdefinedfunctions") {
-        $("#infoPanel > header > ul.action-menu > li.add").hide();
-        $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
-        $("#infoPanel > header > ul.action-menu > li.addMatchers").hide();
-        $("#infoPanel > header > ul.action-menu > li.addUDF").hide();
+        $("#infoPanel > header > ul.action-menu > li.addNode").show();
+        $("#infoPanel > header > ul.action-menu > li.addNode > ul.addNodeSubMenu > li.addUDF").show();
+        $("#infoPanel > header > ul.action-menu > li.addNode > ul.addNodeSubMenu > li.addSensor").hide();
+        $("#infoPanel > header > ul.action-menu > li.addNode > ul.addNodeSubMenu > li.addMatchers").hide();
+        $("#infoPanel > header > ul.action-menu > li.addNode > ul.addNodeSubMenu > li.addDevice").hide();
     }
 
     else {
-        $("#infoPanel > header > ul.action-menu > li.add").hide();
-        $("#infoPanel > header > ul.action-menu > li.addMatchers").hide();
-        $("#infoPanel > header > ul.action-menu > li.addUDF").hide();
-        if (d.type == "device")
-            $("#infoPanel > header > ul.action-menu > li.addSensor").show();
-        else
-            $("#infoPanel > header > ul.action-menu > li.addSensor").hide();
+        $("#infoPanel > header > ul.action-menu > li.addNode > ul.addNodeSubMenu > li.add").hide();
+        $("#infoPanel > header > ul.action-menu > li.addNode > ul.addNodeSubMenu > li.addMatchers").hide();
+        $("#infoPanel > header > ul.action-menu > li.addNode > ul.addNdeSubMenu > li.addUDF").hide();
+        if (d.type == "device") {
+            $("#infoPanel > header > ul.action-menu > li.addNode").show();
+            $("#infoPanel > header > ul.action-menu > li.addNode > ul.addNodeSubMenu > li.addSensor").show();
+        }
+        else {
+            $("#infoPanel > header > ul.action-menu > li.addNode").hide();
+
+        }
+
     }
+
 
 
     // Let's get all the info from the selected element by firing a new API request.
@@ -66,6 +71,9 @@ function showInfoPanel(d) {
         // These differ per object type, so we need to switch and create the right ones.
         jsonToTable(data, "info");
         jsonToTable(data.properties, "properties");
+        jsonToTable(data.conditions, "conditions");
+        jsonToTable(data.userDefinedFunctions, "userDefinedFunctions");
+        jsonToTable(data.matchers, "matchers");
         switch (d.type) {
             case "space":
                 jsonToTable(data.values, "values");
@@ -223,30 +231,14 @@ function showAddObjectForm(parent, type) {
             break;
         case "userdefinedfunctions":
             formContainer.append(
-                $("<label></label>", { for: "hardewareId", text: "Hardware ID:" }),
-                $("<input />", { type: "text", name: "hardwareId" }),
-                $("<label></label>", { for: "typeId", text: "Type:" }),
-                $("<select></select>", { name: "typeId", title: "UserDefinedFunctionsType" }).append(
-                    "<option>Loading...</option>"
-                ),
-                $("<label></label>", { for: "dataTypeId", text: "Data Type:" }),
-                $("<select></select>", {
-                    name: "dataTypeId",
-                    title: "UserDefinedFunctionsDataType"
-                }).append("<option>Loading...</option>"),
-                $("<label></label>", { for: "dataSubtypeId", text: "Data Subtype:" }),
-                $("<select></select>", {
-                    name: "dataSubtypeId",
-                    title: "UserDefinedFunctionsDataSubtype"
-                }).append("<option>Loading...</option>"),
-                $("<label></label>", {
-                    for: "dataUnitTypeId",
-                    text: "Data Unit Type:"
-                }),
-                $("<select></select>", {
-                    name: "dataUnitTypeId",
-                    title: "UserDefinedFunctionsDataUnitType"
-                }).append("<option>Loading...</option>"),
+                $("<label></label>", { for: "name", text: "Name:" }),
+                $("<input />", { type: "text", name: "name" }),
+                $("<label></label>", { for: "metadata", text: "Metadata:" }),
+                $("<input />", { type: "text", name: "metadata" }),
+                $("<label></label>", { for: "contents", text: "Contents:" }),
+                $("<input />", { type: "text", name: "contents" }),
+                $("<label></label>", { for: "udfId", text: "Udf Id:" }),
+                $("<input />", { type: "text", name: "udfId" }),
                 $("<label></label>", {
                     for: "parentSpaceId",
                     text: "Parent Space ID:"
@@ -265,30 +257,14 @@ function showAddObjectForm(parent, type) {
             break;
         case "matchers":
             formContainer.append(
-                $("<label></label>", { for: "hardewareId", text: "Hardware ID:" }),
-                $("<input />", { type: "text", name: "hardwareId" }),
-                $("<label></label>", { for: "typeId", text: "Type:" }),
-                $("<select></select>", { name: "typeId", title: "MatchersType" }).append(
-                    "<option>Loading...</option>"
-                ),
-                $("<label></label>", { for: "dataTypeId", text: "Data Type:" }),
-                $("<select></select>", {
-                    name: "dataTypeId",
-                    title: "MatchersDataType"
-                }).append("<option>Loading...</option>"),
-                $("<label></label>", { for: "dataSubtypeId", text: "Data Subtype:" }),
-                $("<select></select>", {
-                    name: "dataSubtypeId",
-                    title: "MatchersDataSubtype"
-                }).append("<option>Loading...</option>"),
-                $("<label></label>", {
-                    for: "dataUnitTypeId",
-                    text: "Data Unit Type:"
-                }),
-                $("<select></select>", {
-                    name: "dataUnitTypeId",
-                    title: "MatchersDataUnitType"
-                }).append("<option>Loading...</option>"),
+                $("<label></label>", { for: "name", text: "Name:" }),
+                $("<input />", { type: "text", name: "name" }),
+                $("<label></label>", { for: "friendlyName", text: "Friendly Name:" }),
+                $("<input />", { type: "text", name: "friendlyName" }),
+                $("<label></label>", { for: "description", text: "Description:" }),
+                $("<input />", { type: "text", name: "description" }),
+                $("<label></label>", { for: "conditions", text: "Conditions:" }),
+                $("<input />", { type: "text", name: "conditions" }),
                 $("<label></label>", {
                     for: "parentSpaceId",
                     text: "Parent Space ID:"
@@ -521,100 +497,58 @@ function showEditObjectForm(object) {
             break;
         case "userdefinedfunctions":
             formContainer.append(
-                $("<label></label>", { for: "port", text: "Port:" }),
+                $("<label></label>", { for: "name", text: "Name:" }),
                 $("<input />", {
                     type: "text",
-                    name: "port",
-                    val: "port" in object ? object.port : ""
+                    name: "name",
+                    val: "name" in object ? object.name : ""
                 }),
-                $("<label></label>", { for: "hardwareId", text: "Hardware ID:" }),
+                $("<label></label>", { for: "metadata", text: "Metadata:" }),
                 $("<input />", {
                     type: "text",
-                    name: "hardwareId",
-                    val: "hardwareId" in object ? object.hardwareId : ""
+                    name: "metadata",
+                    val: "metadata" in object ? object.friendlyName : ""
                 }),
-                $("<label></label>", { for: "pollRate", text: "Poll Rate:" }),
+                $("<label></label>", { for: "contents", text: "Contents:" }),
                 $("<input />", {
                     type: "text",
-                    name: "pollRate",
-                    val: "pollRate" in object ? object.pollRate : ""
+                    name: "contents",
+                    val: "contents" in object ? object.description : ""
                 }),
-                $("<label></label>", { for: "typeId", text: "Type:" }),
-                $("<select></select>", { name: "typeId", title: "UserDefinedFunctionType" }).append(
-                    "<option>Loading...</option>"
-                ),
-                $("<label></label>", { for: "portTypeId", text: "Port Type:" }),
-                $("<select></select>", {
-                    name: "portTypeId",
-                    title: "UserDefinedFunctionPortType"
-                }).append("<option>Loading...</option>"),
-                $("<label></label>", { for: "dataTypeId", text: "Data Type:" }),
-                $("<select></select>", {
-                    name: "dataTypeId",
-                    title: "UserDefinedFunctionDataType"
-                }).append("<option>Loading...</option>"),
-                $("<label></label>", { for: "dataSubtypeId", text: "Data Subtype:" }),
-                $("<select></select>", {
-                    name: "dataSubtypeId",
-                    title: "UserDefinedFunctionDataSubtype"
-                }).append("<option>Loading...</option>"),
-                $("<label></label>", {
-                    for: "dataUnitTypeId",
-                    text: "Data Unit Type:"
-                }),
-                $("<select></select>", {
-                    name: "dataUnitTypeId",
-                    title: "UserDefinedFunctionDataUnitType"
-                }).append("<option>Loading...</option>")
+                $("<label></label>", { for: "udfId", text: "Udf Id" }),
+                $("<input />", {
+                    type: "text",
+                    name: "udfId",
+                    val: "udfId" in object ? object.description : ""
+                })
             );
             break;
         case "matchers":
             formContainer.append(
-                $("<label></label>", { for: "port", text: "Port:" }),
+                $("<label></label>", { for: "name", text: "Name:" }),
                 $("<input />", {
                     type: "text",
-                    name: "port",
-                    val: "port" in object ? object.port : ""
+                    name: "name",
+                    val: "name" in object ? object.name : ""
                 }),
-                $("<label></label>", { for: "hardwareId", text: "Hardware ID:" }),
+                $("<label></label>", { for: "friendlyName", text: "Friendly Name:" }),
                 $("<input />", {
                     type: "text",
-                    name: "hardwareId",
-                    val: "hardwareId" in object ? object.hardwareId : ""
+                    name: "friendlyName",
+                    val: "friendlyName" in object ? object.friendlyName : ""
                 }),
-                $("<label></label>", { for: "pollRate", text: "Poll Rate:" }),
+                $("<label></label>", { for: "description", text: "Description:" }),
                 $("<input />", {
                     type: "text",
-                    name: "pollRate",
-                    val: "pollRate" in object ? object.pollRate : ""
+                    name: "description",
+                    val: "description" in object ? object.description : ""
                 }),
-                $("<label></label>", { for: "typeId", text: "Type:" }),
-                $("<select></select>", { name: "typeId", title: "MatcherType" }).append(
-                    "<option>Loading...</option>"
-                ),
-                $("<label></label>", { for: "portTypeId", text: "Port Type:" }),
-                $("<select></select>", {
-                    name: "portTypeId",
-                    title: "MatcherPortType"
-                }).append("<option>Loading...</option>"),
-                $("<label></label>", { for: "dataTypeId", text: "Data Type:" }),
-                $("<select></select>", {
-                    name: "dataTypeId",
-                    title: "MatcherDataType"
-                }).append("<option>Loading...</option>"),
-                $("<label></label>", { for: "dataSubtypeId", text: "Data Subtype:" }),
-                $("<select></select>", {
-                    name: "dataSubtypeId",
-                    title: "MatcherDataSubtype"
-                }).append("<option>Loading...</option>"),
-                $("<label></label>", {
-                    for: "dataUnitTypeId",
-                    text: "Data Unit Type:"
-                }),
-                $("<select></select>", {
-                    name: "dataUnitTypeId",
-                    title: "MatcherDataUnitType"
-                }).append("<option>Loading...</option>")
+                $("<label></label>", { for: "conditions", text: "Conditions:" }),
+                $("<input />", {
+                    type: "text",
+                    name: "conditions",
+                    val: "conditions" in object ? object.description : ""
+                })
             );
             break;
         default:
@@ -783,6 +717,7 @@ function hideObjectForm() {
 
 // Function that will create the tables from the json.
 function jsonToTable(json, tableName) {
+    
     if (!json || json.length < 1) return;
     // Create the basic elements
     var table = $("<table class='collapsable'></table>");
@@ -832,6 +767,28 @@ function jsonToTable(json, tableName) {
                 json.timestamp +
                 "</td></tr>"
             );
+
+            break;
+        case "conditions":
+            $.each(json, function (k, v) {
+                tableBody.append(
+                    "<tr><td>" + v.name + "</td><td>" + v.value + "</td></tr>"
+                );
+            });
+            break;
+        case "matchers":
+            $.each(json, function (k, v) {
+                tableBody.append(
+                    "<tr><td>" + v.name + "</td><td>" + v.value + "</td></tr>"
+                );
+            });
+            break;
+        case "userDefinedFunctions":
+            $.each(json, function (k, v) {
+                tableBody.append(
+                    "<tr><td>" + v.name + "</td><td>" + v.value + "</td></tr>"
+                );
+            });
             break;
         case "properties":
             $.each(json, function (k, v) {

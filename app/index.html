@@ -20,7 +20,10 @@
     <script src="scripts/infopanel.js"></script>
     <script src="scripts/graph.js"></script>
     <script src="scripts/spaces.js"></script>
+
     <script type="text/javascript">
+
+
 
         $(function () {
             // try to populate inputs from config from storage
@@ -49,8 +52,12 @@
                     .text(user.profile.name);
                 $("#signOut").click(function () { logout(); });
 
-                // Toggle for the drop down down Show menu
+                // Toggle for the drop down Show menu
                 $("#showNodesButton").click(function () {
+                    $(this).toggleClass("selected").find("ul").toggle();
+                });
+                // Toggle for the drop down Add Node menu
+                $("#addNodesButton").click(function () {
                     $(this).toggleClass("selected").find("ul").toggle();
                 });
 
@@ -72,7 +79,7 @@
                 $("#objectAddDeviceButton").click(function () { showAddObjectForm(selectedNode, "device"); });
                 $("#objectAddSensorButton").click(function () { showAddObjectForm(selectedNode, "sensor"); });
                 $("#objectAddUserDefinedFunctionsButton").click(function () { showAddObjectForm(selectedNode, "userdefinedfunctions"); });
-                $("#objectAddMatcherButton").click(function () { showAddObjectForm(selectedNode, "matchers"); });
+                $("#objectAddMatchersButton").click(function () { showAddObjectForm(selectedNode, "matchers"); });
                 $("#objectEditButton").click(function () { showEditObjectForm(selectedNode); });
                 $("#objectDeleteButton").click(function () { showDeleteObjectForm(selectedNode); });
 
@@ -211,8 +218,6 @@
                                 <li><span class="sensor">Sensors</span></li>
                                 <li><span class="userdefinedfunctions">UserDefinedFunctions</span></li>
                                 <li><span class="matchers">Matchers</span></li>
-
-
                             </ul>
                         </li>
                         <li id="refreshButton" class="refresh">Refresh</li>
@@ -268,13 +273,17 @@
                     <h2 class="space">Space</h2>
                     <span class="drawer-close" id="infoCloseButton"></span>
                     <ul class='action-menu'>
-                        <li id='objectAddButton' class='add'>Add Child Space</li>
-                        <li id='objectAddDeviceButton' class='add'>Add Device</li>
-                        <li id='objectAddSensorButton' class='addSensor'>Add Sensor</li>
-
-                        <li id='objectAddUserDefinedFunctionsButton' class='addUDF'>Add User-defined Functions</li>
-                        <li id='objectAddMatchersButton' class='addMatchers'>Add Matcher</li>
-
+                        <li id="addNodesButton" class="addNode">
+                            Add Node
+                            <ul id="addNodeSubMenu" class="addNodeSubMenu">
+                                <li id='objectAddButton' class='add'>Child Space</li>
+                                <li id='objectAddDeviceButton' class='add'>Device</li>
+                                <li id='objectAddSensorButton' class='addSensor'>Sensor</li>
+                                <li id='objectAddUserDefinedFunctionsButton' class='addUDF'>User-defined Functions</li>
+                                <li id='objectAddMatchersButton' class='addMatchers'>Matcher</li>
+                            </ul>
+                        </li>
+                        
                         <li id='objectEditButton' class='edit'>Edit</li>
                         <li id='objectDeleteButton' class='delete'>Delete</li>
                     </ul>
