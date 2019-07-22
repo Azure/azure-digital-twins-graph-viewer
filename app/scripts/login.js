@@ -86,12 +86,43 @@ function handleTokenError(error) {
 }
 
 function login() {
+
+    var inputUrl = $("#twinsUrl").val();
+    var inputTenantId = $("#twinsTenantId").val()
+    var inputClientId = $("#twinsClientId").val();
+
+    // Input validation / transformation before saving to storage
+    if( !inputUrl ) {
+        showAlert("error", "Invalid Input", "A DigitalTwins URL is required for the graph viewer to work.");
+        return;
+    }
+
+    if( !inputUrl.endsWith("/") ) {
+        inputUrl += '/'
+    }
+
+    if( !isGuid(inputTenantId) ) {
+        showAlert("error", "Invalid Input", "TenantId must be in GUID format. Please refer to the README for more information.");
+        return;
+    }
+
+    if( !isGuid(inputClientId) ) {
+        showAlert("error", "Invalid Input", "ClientId must be in GUID format. Please refer to the README for more information.");
+        return;
+    }
+
     // try to store fields for easier access next time
-    saveStateToStorage($("#twinsUrl").val(), $("#twinsTenantId").val(), $("#twinsClientId").val());
+    saveStateToStorage( inputUrl, inputTenantId, inputClientId );
     var localAuthContext = authenticate();
     localAuthContext.login();
 }
 
 function logout() {
     authContext.logOut();
+}
+
+function isGuid(guid) {
+    let s = "" + guid;
+    s = s.match('^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$');
+    return s !== null;
 }

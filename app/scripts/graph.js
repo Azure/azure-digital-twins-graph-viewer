@@ -46,6 +46,9 @@ var recursiveCounter = 0;
 var viewerWidth, viewerHeight;
 var baseSVG, svgGroup, zoomSlider;
 
+// Default number of levels in the graph that will be expanded on load (1=only root)
+var expandedDepthOnLoad = 3;
+
 // define a d3 diagonal projection for use by the node paths later on.
 var diagonal = d3.svg.diagonal()
     .source(function (d) {
@@ -199,7 +202,8 @@ function updateChildren(parent, types) {
         parent._children = [];
         children.forEach(function (child) {
             // Check if this is something we want to show..
-            if (types.includes(child.type)) {
+            // We can use the recursivecounter as an indicator for the depth of the current node, so we don't expand _all_ levels on load to keep the graph managable. 
+            if (types.includes(child.type) && (recursiveCounter < expandedDepthOnLoad) ) {
                 parent.children.push(child);
             } else {
                 parent._children.push(child);
