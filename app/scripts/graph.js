@@ -1,4 +1,4 @@
-﻿/* 
+﻿/*
 Copyright (c) 2013-2016, Rob Schmuecker
 All rights reserved.
 
@@ -51,13 +51,13 @@ var expandedDepthOnLoad = 3;
 
 // define a d3 diagonal projection for use by the node paths later on.
 var diagonal = d3.svg.diagonal()
-    .source(function (d) {
-        return { "x": d.source.x, "y": d.source.y + (nodeWidth / 2) };
+    .source(function(d) {
+        return {"x":d.source.x, "y":d.source.y+(nodeWidth/2) };
     })
-    .target(function (d) {
-        return { "x": d.target.x, "y": d.target.y - (nodeWidth / 2) }
+    .target(function(d) {
+        return {"x":d.target.x, "y":d.target.y-(nodeWidth/2) }
     })
-    .projection(function (d) {
+    .projection(function(d){
         return [d.y, d.x];
     });
 
@@ -71,12 +71,12 @@ function initializeGraphVisualizer(data) {
 
     // Create the tree object.
     tree = d3.layout.tree()
-        .size([viewerHeight, viewerWidth]);
+    .size([viewerHeight, viewerWidth]);
 
     // define the baseSvg, attaching a class for styling and the zoomListener
     baseSvg = d3.select("#graphContent").append("svg")
-        .attr("class", "overlay")
-        .call(zoomListener);
+    .attr("class", "overlay")
+    .call(zoomListener);
 
     // Create the defs that will hold clipping and shadow paths.
     var svgDefs = baseSvg.append("defs")
@@ -103,8 +103,8 @@ function initializeGraphVisualizer(data) {
         .attr("id", "nodeClipPathLarge").append("rect")
         .attr("width", nodeWidth + 50)
         .attr("height", nodeHeight)
-        .attr('y', (nodeHeight / 2) * -1)
-        .attr('x', (nodeWidth / 2) * -1)
+        .attr('y', (nodeHeight/2) * -1)
+        .attr('x', (nodeWidth/2) * -1)
         .attr("rx", 3)
         .attr("ry", 3);
 
