@@ -36,28 +36,28 @@ function executeApiDigitalTwinJSON(api, command, json, fComplete) {
                 case "PUT":
                     ajaxJSON.data = json;
                     ajaxJSON.contentType = "application/json";
-                    break;
+                break;
                 case "PATCH":
                     ajaxJSON.data = json;
                     ajaxJSON.contentType = "application/json";
-                    break;
+                break;
                 case "POST":
                     ajaxJSON.data = json;
                     ajaxJSON.contentType = "application/json";
-                    break;
+                break;
                 case "DELETE":
                     ajaxJSON.contentType = "application/json";
-                    break;
+                break;
             }
 
             // Make the call.
-            $.ajax(ajaxJSON).success(function (data) {
+            $.ajax( ajaxJSON ).success(function (data) {
                 fComplete(data);
             }).error(function (err) {
                 showAlert("error",
-                    "API Execution",
-                    "API error: " + JSON.stringify(err),
-                    false);
+                "API Execution",
+                "API error: " + JSON.stringify(err),
+                 false);
             });
         }
     );
@@ -515,14 +515,14 @@ function addRootSpace() {
     // Create the deferred object
     var deferred = $.Deferred();
 
-    addObject("space", rootspace, function (data) {
-        if (data) {
+    addObject("space", rootspace, function(data) {
+        if (data){
             alert(JSON.stringify(data));
             var resource = {
                 "Type": "IoTHub",
                 "SpaceId": data.id
             }
-            addObject("resource", resource, function (s) {
+            addObject("resource", resource, function(s) {
                 refreshData();
                 deferred.resolve(s);
             });
@@ -631,11 +631,11 @@ function objectDragAction(node, target, fEndDrag) {
     // Make the call
     $("#graphLoaderIcon").show();
     var updateDigitalTwins = $.Deferred();
-    patchDigitalTwins(node.id, node.type, jsonData, function (status, response) {
+    patchDigitalTwins(node.id, node.type, jsonData, function (status, response) { 
         if (response)
-            updateDigitalTwins.resolve(response.error.message);
+            updateDigitalTwins.resolve(response.error.message); 
         else
-            updateDigitalTwins.resolve(status);
+            updateDigitalTwins.resolve(status); 
     });
 
     // Call is done, let's see the result
