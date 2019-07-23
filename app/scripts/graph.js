@@ -52,12 +52,12 @@ var expandedDepthOnLoad = 3;
 // define a d3 diagonal projection for use by the node paths later on.
 var diagonal = d3.svg.diagonal()
     .source(function(d) {
-        return {"x":d.source.x, "y":d.source.y+(nodeWidth/2) };
+        return {"x":d.source.x, "y":d.source.y+(nodeWidth/2)};
     })
     .target(function(d) {
-        return {"x":d.target.x, "y":d.target.y-(nodeWidth/2) }
+        return {"x":d.target.x, "y":d.target.y-(nodeWidth/2)}
     })
-    .projection(function(d){
+    .projection(function (d) {
         return [d.y, d.x];
     });
 
@@ -86,8 +86,8 @@ function initializeGraphVisualizer(data) {
         .attr("id", "nodeClipPath").append("rect")
         .attr("width", nodeWidth)
         .attr("height", nodeHeight)
-        .attr('y', (nodeHeight / 2) * -1)
-        .attr('x', (nodeWidth / 2) * -1)
+        .attr('y', (nodeHeight/2) * -1)
+        .attr('x', (nodeWidth/2) * -1)
         .attr("rx", 3)
         .attr("ry", 3);
 
@@ -96,12 +96,12 @@ function initializeGraphVisualizer(data) {
         .attr("id", "nodeTextClipPath").append("rect")
         .attr("width", nodeWidth - nodeHeight - 30)
         .attr("height", nodeHeight)
-        .attr('y', (nodeHeight / 2) * -1)
-        .attr("x", nodeHeight + 5 + (nodeWidth / 2) * -1);
+        .attr('y', (nodeHeight/2) * -1)
+        .attr("x", nodeHeight+5+(nodeWidth/2)*-1);
 
     svgDefs.append("clipPath")
         .attr("id", "nodeClipPathLarge").append("rect")
-        .attr("width", nodeWidth + 50)
+        .attr("width", nodeWidth+50)
         .attr("height", nodeHeight)
         .attr('y', (nodeHeight/2) * -1)
         .attr('x', (nodeWidth/2) * -1)
@@ -141,26 +141,26 @@ function initializeGraphVisualizer(data) {
 
     // Set the zoom slider and on input change the zoomListener.
     zoomSlider = d3.select("#zoomSlider")
-        .attr("min", zoomListener.scaleExtent()[0])
-        .attr("max", zoomListener.scaleExtent()[1])
-        .attr("step", (zoomListener.scaleExtent()[1] - zoomListener.scaleExtent()[0]) / 100)
-        .attr("value", zoomListener.scaleExtent()[1])
-        .on("input", function () {
-            var center = [viewerWidth / 2, viewerHeight / 2],
-                translate = zoomListener.translate(),
-                translate0 = [],
-                l = [],
-                view = { x: translate[0], y: translate[1], k: zoomListener.scale() }
+      .attr("min", zoomListener.scaleExtent()[0])
+      .attr("max", zoomListener.scaleExtent()[1])
+      .attr("step", (zoomListener.scaleExtent()[1] - zoomListener.scaleExtent()[0])/100)
+      .attr("value", zoomListener.scaleExtent()[1])
+      .on("input", function () {
+          var center = [viewerWidth / 2, viewerHeight / 2],
+          translate = zoomListener.translate(),
+          translate0 = [],
+          l = [],
+          view = {x: translate[0], y: translate[1], k: zoomListener.scale()}
 
-            translate0 = [(center[0] - view.x) / view.k, (center[1] - view.y) / view.k];
-            view.k = this.value;
-            l = [translate0[0] * view.k + view.x, translate0[1] * view.k + view.y];
+          translate0 = [(center[0] - view.x) / view.k, (center[1] - view.y) / view.k];
+          view.k = this.value;
+          l = [translate0[0] * view.k + view.x, translate0[1] * view.k + view.y];
 
-            view.x += center[0] - l[0];
-            view.y += center[1] - l[1];
+          view.x += center[0] - l[0];
+          view.y += center[1] - l[1];
 
-            zoomListener.scale(this.value).translate([view.x, view.y]).event(svgGroup);
-        });
+          zoomListener.scale(this.value).translate([view.x, view.y]).event(svgGroup);
+      });
 
     // Define the root
     root = treeData;
@@ -200,7 +200,7 @@ function updateChildren(parent, types) {
         // We clear out all the children of the parent so we can add them later to the correct group.
         parent.children = [];
         parent._children = [];
-        children.forEach(function (child) {
+        children.forEach(function(child) {
             // Check if this is something we want to show..
             // We can use the recursivecounter as an indicator for the depth of the current node, so we don't expand _all_ levels on load to keep the graph managable. 
             if (types.includes(child.type) && (recursiveCounter < expandedDepthOnLoad) ) {
@@ -223,9 +223,9 @@ function updateChildren(parent, types) {
 // Function that will check which objects types should be collapsed..
 function showObjectTypes() {
     var objectTypesToShow = [];
-    $("#showSubMenu").find("li.selected > span").each(function () {
-        objectTypesToShow.push($(this).attr("class"));
-    });
+    $("#showSubMenu").find("li.selected > span").each(function() {
+          objectTypesToShow.push($(this).attr("class"));
+      });
     updateChildren(treeData, objectTypesToShow);
 }
 
@@ -296,10 +296,10 @@ function addNodeToGraph(node) {
 
 // Update the nodes for the graph with new data.
 function updateNodeInGraph(node, data) {
-    $.each(data, function (k, v) {
+    $.each(data, function(k,v) {
         node[k] = v;
     })
-    var domNode = d3.select('[id="' + node.id + '"]');
+    var domNode = d3.select('[id="'+node.id+'"]');
     domNode.select("text.nodeText").text(node.label);
     showInfoPanel(node);
 }
@@ -307,7 +307,7 @@ function updateNodeInGraph(node, data) {
 // Removing a node from the graph after a delete.
 function removeNodeFromGraph(node) {
     // Remove the domNode
-    var domNode = d3.select('[id="' + node.id + '"]');
+    var domNode = d3.select('[id="'+node.id+'"]');
     domNode.select("g.scaler").transition().duration(300).attr("transform", "scale(0)").remove();
 
     // Remove it's children.
