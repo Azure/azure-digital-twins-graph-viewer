@@ -57,7 +57,7 @@ function executeApiDigitalTwinJSON(api, command, json, fComplete) {
                 showAlert("error",
                 "API Execution",
                 "API error: " + JSON.stringify(err),
-                 false);
+                false);
             });
         }
     );
