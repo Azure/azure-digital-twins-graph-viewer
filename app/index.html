@@ -29,6 +29,7 @@
             if(getTwinsInstanceRoot() && getTwinsTenantId() && getTwinsClientId()){
                 authenticate();
             }
+
             // If the user is logged in, let make sure we set everything.
             if (user) {
                 // Hide the welcome message and show the visualizer div that holds the visualization.
@@ -52,6 +53,7 @@
                 $("#showNodesButton").click(function() {
                     $(this).toggleClass("selected").find("ul").toggle();
                 });
+
                 // Refresh the data if the refresh button is clicked.
                 $("#refreshButton").click(function () { refreshData(); });
 
@@ -88,7 +90,7 @@
                     hideObjectForm();
                 });
 
-                // Show sub-menu actions.
+                // Show sub-menu actions. 
                 $("#showSubMenu > li").click(function() {
                     if ($(this).hasClass("selected")) {
                         $(this).removeClass("selected").nextAll().removeClass("selected");
@@ -132,7 +134,7 @@
                 $("#twinsClientId").val(state.clientId);
             }
         }
-/**/</script>
+</script>
 
 
 </head>
@@ -154,7 +156,7 @@
             </div>
         </div>
     </header>
-    <main class="main-area">
+    <main class="main-area"> 
         <!-- Alert DIV placeholder. -->
         <div id="alert">
             <h2>Error</h2>
@@ -200,6 +202,7 @@
                     <!-- Breadcrumb to be populated once a node is selected -->
                     <ol id="breadCrumbList" class="breadcrumb">
                     </ol>
+
                     <!-- Action Menu -->
                     <ul id="action-menu" class="action-menu">
                         <li id="apiButton">Execute API Call</li>
@@ -214,11 +217,11 @@
                             </ul>
                         </li>
                         <li id="refreshButton" class="refresh">Refresh</li>
-                    </ul>
+                    </ul> 
                 </nav>
 
                 <!-- Container that will hold the graph -->
-                <div id="graphContent" class="graph-canvas">
+                <div id="graphContent" class="graph-canvas"> 
                     <!-- Loading icon when graph is loading. -->
                     <img src="images/ajax-loader.gif" id="graphLoaderIcon" class="loaderIcon" style="display: none;" />
                 </div>
@@ -237,7 +240,7 @@
                            <h3>Call (excluding base url)</h3>
                            <div class="form-container">
                                <label>API (<a href="https://docs.westcentralus.azuresmartspaces.net/management/swagger" target="_new">Swagger</a>)</label>
-                               <input type="text" name="apiCall" />
+                               <input type="text" name="apiCall"/>
                                <label>Method</label>
                                <select name="apiMethod">
                                    <option>GET</option>
@@ -291,8 +294,8 @@
                             <div class="form-container">
                                 <!-- we will generate the add form here. -->
                             </div>
-                            <div class="button-container">
-                                <input type="submit" class="button confirm" value="Create">
+                            <div class="button-container"> 
+                                <input type="submit" class="button confirm" value="Create"> 
                                 <input type="reset" class="button cancel" value="Cancel">
                             </div>
                         </form>
@@ -302,7 +305,7 @@
                                 <!-- we will generate the edit form here. -->
                             </div>
                             <div class="button-container">
-                                <input type="submit" class="button confirm" value="Save">
+                                <input type="submit" class="button confirm" value="Save"> 
                                 <input type="reset" class="button cancel" value="Cancel">
                             </div>
                         </form>
@@ -314,7 +317,7 @@
                                 <tbody></tbody>
                             </table>
                             <div class="button-container">
-                                <input type="submit" class="button confirm" value="Delete">
+                                <input type="submit" class="button confirm" value="Delete"> 
                                 <input type="reset" class="button cancel" value="Cancel">
                             </div>
                         </form>
@@ -335,10 +338,10 @@
             <!-- Zoom slider -->
             <div id="graphZoomSlider" class="zoom-slider-container" style="display: none;">
                 <input type="range" class="zoom-slider" id="zoomSlider"></button>
-            </div>
+            </div> 
 
         </div>
-    </footer>
+    </footer> 
 
 </body>
 </html>
