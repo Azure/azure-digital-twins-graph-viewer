@@ -20,16 +20,13 @@
     <script src="scripts/infopanel.js"></script>
     <script src="scripts/graph.js"></script>
     <script src="scripts/spaces.js"></script>
-
     <script type="text/javascript">
-
-
 
         $(function () {
             // try to populate inputs from config from storage
             prepopulateInputs();
 
-            if (getTwinsInstanceRoot() && getTwinsTenantId() && getTwinsClientId()) {
+            if(getTwinsInstanceRoot() && getTwinsTenantId() && getTwinsClientId()){
                 authenticate();
             }
 
@@ -44,7 +41,7 @@
                 $("#loginContainer")
                     .addClass("signed-in")
                     .append("<ul id=\"loginMenu\"><li id=\"signOut\">Sign Out</li></ul>")
-                    .click(function () {
+                    .click(function() {
                         $("#loginContainer").toggleClass("selected");
                         $("#loginMenu").toggle();
                     });
@@ -53,11 +50,7 @@
                 $("#signOut").click(function () { logout(); });
 
                 // Toggle for the drop down Show menu
-                $("#showNodesButton").click(function () {
-                    $(this).toggleClass("selected").find("ul").toggle();
-                });
-                // Toggle for the drop down Add Node menu
-                $("#addNodesButton").click(function () {
+                $("#showNodesButton").click(function() {
                     $(this).toggleClass("selected").find("ul").toggle();
                 });
 
@@ -65,7 +58,7 @@
                 $("#refreshButton").click(function () { refreshData(); });
 
                 // Create new root space if button is clicked.
-                $("#addRootButton").click(function () { addRootSpace(); });
+                $("#addRootButton").click(function() { addRootSpace(); });
 
                 // Open API panel
                 $("#apiButton").click(function () { showApiPanel(); });
@@ -74,6 +67,11 @@
 
                 // Hide the info panel when the close button is clicked.
                 $("#infoCloseButton").click(function () { hideInfoPanel(); });
+
+                 // Toggle for the drop down Add Node menu
+                $("#addNodesButton").click(function() {
+                    $(this).toggleClass("selected").find("ul").toggle();
+                });
 
                 $("#objectAddButton").click(function () { showAddObjectForm(selectedNode, "space"); });
                 $("#objectAddDeviceButton").click(function () { showAddObjectForm(selectedNode, "device"); });
@@ -88,12 +86,12 @@
                     submitObjectForm($(this));
                 })
 
-                $("input[type='reset']").click(function () {
+                $("input[type='reset']").click(function() {
                     hideObjectForm();
                 });
 
                 // Show sub-menu actions.
-                $("#showSubMenu > li").click(function () {
+                $("#showSubMenu > li").click(function() {
                     if ($(this).hasClass("selected")) {
                         $(this).removeClass("selected").nextAll().removeClass("selected");
                     } else {
@@ -106,7 +104,7 @@
                 // Refresh the data for the initial load.
                 // This is a workaround to make sure the loading of data happens only after the ADAL redirects.
                 // There has to be a better solution... :)
-                setTimeout(function () {
+                setTimeout(function () { 
                     refreshData();
                 }, 2500);
 
@@ -114,11 +112,11 @@
                 // Hide the visualizer section
                 $("#visualizer").hide();
                 // Login the user.
-                $("#loginContainer").click(function () { login(); });
+                $("#loginContainer").click(function() { login(); });
             }
 
             // Hide the alert when clicked.
-            $("#alert").click(function () {
+            $("#alert").click(function() {
                 $("#alert").toggleClass("show");
             })
 
@@ -126,13 +124,13 @@
 
         function prepopulateInputs() {
             var state = loadSavedStateFromStorage();
-            if (state.url) {
+            if(state.url){
                 $("#twinsUrl").val(state.url);
             }
-            if (state.tenantId) {
+            if(state.tenantId){
                 $("#twinsTenantId").val(state.tenantId);
             }
-            if (state.clientId) {
+            if(state.clientId){
                 $("#twinsClientId").val(state.clientId);
             }
         }
@@ -150,7 +148,9 @@
             <h1>Azure Digital Twins Graph Viewer</h1>
             <div class="top-header-login" id="loginContainer">
                 <div>
-                    <picture role="img" aria-label="Microsoft profile picture"></picture>
+                    <picture role="img" aria-label="Microsoft profile picture">
+
+                    </picture>
                 </div>
                 <div>
                     <h5 id="username">Sign In</h5>
@@ -158,7 +158,7 @@
             </div>
         </div>
     </header>
-    <main class="main-area">
+    <main class="main-area"> 
         <!-- Alert DIV placeholder. -->
         <div id="alert">
             <h2>Error</h2>
@@ -180,19 +180,17 @@
                     <li class="list-item" style="">
                         <label class="twins-config-label">
                             Azure Digital Twins Instance Root Url
-                            <input id="twinsUrl" type="text" placeholder="https://[instancename].[region].azuresmartspaces.net/" />
+                        <input id="twinsUrl" type="text" placeholder="https://[instancename].[region].azuresmartspaces.net/" />
                         </label>
                     </li>
                     <li class="list-item" style="">
-                        <label class="twins-config-label">
-                            Tenant Id
-                            <input id="twinsTenantId" type="text" placeholder="00000000-0000-0000-0000-000000000000" />
+                        <label class="twins-config-label">Tenant Id
+                        <input id="twinsTenantId" type="text" placeholder="00000000-0000-0000-0000-000000000000" />
                         </label>
                     </li>
                     <li class="list-item" style="">
-                        <label class="twins-config-label">
-                            Client Id
-                            <input id="twinsClientId" type="text" placeholder="00000000-0000-0000-0000-000000000000" />
+                        <label class="twins-config-label">Client Id
+                        <input id="twinsClientId" type="text" placeholder="00000000-0000-0000-0000-000000000000" />
                         </label>
                     </li>
                 </ul>
@@ -204,14 +202,14 @@
             <div class="graph-container">
                 <nav>
                     <!-- Breadcrumb to be populated once a node is selected -->
-                    <ol id="breadCrumbList" class="breadcrumb"></ol>
+                    <ol id="breadCrumbList" class="breadcrumb">
+                    </ol>
 
                     <!-- Action Menu -->
                     <ul id="action-menu" class="action-menu">
                         <li id="apiButton">Execute API Call</li>
                         <li id="addRootButton" class="addRoot" style="display: none;">Create Root Space</li>
-                        <li id="showNodesButton" class="show">
-                            Show
+                        <li id="showNodesButton" class="show">Show
                             <ul id="showSubMenu" class="showSubMenu">
                                 <li class="selected"><span class="space">Spaces</span></li>
                                 <li><span class="device">Devices</span></li>
@@ -273,8 +271,7 @@
                     <h2 class="space">Space</h2>
                     <span class="drawer-close" id="infoCloseButton"></span>
                     <ul class='action-menu'>
-                        <li id="addNodesButton" class="addNode">
-                            Add Node
+                        <li id="addNodesButton" class="addNode">Add Node
                             <ul id="addNodeSubMenu" class="addNodeSubMenu">
                                 <li id='objectAddButton' class='add'>Child Space</li>
                                 <li id='objectAddDeviceButton' class='add'>Device</li>
@@ -283,7 +280,6 @@
                                 <li id='objectAddMatchersButton' class='addMatchers'>Matcher</li>
                             </ul>
                         </li>
-                        
                         <li id='objectEditButton' class='edit'>Edit</li>
                         <li id='objectDeleteButton' class='delete'>Delete</li>
                     </ul>
