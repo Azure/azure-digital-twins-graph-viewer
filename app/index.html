@@ -53,7 +53,7 @@
                 $("#showNodesButton").click(function() {
                     $(this).toggleClass("selected").find("ul").toggle();
                 });
-                    
+                                       
                 // Refresh the data if the refresh button is clicked.
                 $("#refreshButton").click(function () { refreshData(); });
 
@@ -202,7 +202,7 @@
                     <!-- Breadcrumb to be populated once a node is selected -->
                     <ol id="breadCrumbList" class="breadcrumb">
                     </ol>
-
+ 
                     <!-- Action Menu -->
                     <ul id="action-menu" class="action-menu">
                         <li id="apiButton">Execute API Call</li>
@@ -217,12 +217,12 @@
                             </ul>
                         </li>
                         <li id="refreshButton" class="refresh">Refresh</li>
-                    </ul> 
+                    </ul>                
                 </nav>
 
                 <!-- Container that will hold the graph -->
                 <div id="graphContent" class="graph-canvas"> 
-                    <!-- Loading icon when graph is loading. -->
+                    <!-- Loading icon when graph is loading. -->  
                     <img src="images/ajax-loader.gif" id="graphLoaderIcon" class="loaderIcon" style="display: none;" />
                 </div>
             </div>
