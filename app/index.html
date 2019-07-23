@@ -49,7 +49,7 @@
                     .text(user.profile.name);
                 $("#signOut").click(function () { logout(); });
 
-                // Toggle for the drop down down Show menu
+                // Toggle for the drop down Show menu
                 $("#showNodesButton").click(function() {
                     $(this).toggleClass("selected").find("ul").toggle();
                 });
@@ -67,14 +67,21 @@
 
                 // Hide the info panel when the close button is clicked.
                 $("#infoCloseButton").click(function () { hideInfoPanel(); });
-                
-                $("#objectAddButton").click(function() { showAddObjectForm(selectedNode, "space"); });
-                $("#objectAddDeviceButton").click(function() { showAddObjectForm(selectedNode, "device"); });
-                $("#objectAddSensorButton").click(function() { showAddObjectForm(selectedNode, "sensor"); });
-                $("#objectEditButton").click(function() { showEditObjectForm(selectedNode); });
-                $("#objectDeleteButton").click(function() { showDeleteObjectForm(selectedNode); });
 
-                $("form").submit(function(e) { 
+                 // Toggle for the drop down Add Node menu
+                $("#addNodesButton").click(function() {
+                    $(this).toggleClass("selected").find("ul").toggle();
+                });
+
+                $("#objectAddButton").click(function () { showAddObjectForm(selectedNode, "space"); });
+                $("#objectAddDeviceButton").click(function () { showAddObjectForm(selectedNode, "device"); });
+                $("#objectAddSensorButton").click(function () { showAddObjectForm(selectedNode, "sensor"); });
+                $("#objectAddUserDefinedFunctionsButton").click(function () { showAddObjectForm(selectedNode, "userdefinedfunctions"); });
+                $("#objectAddMatchersButton").click(function () { showAddObjectForm(selectedNode, "matchers"); });
+                $("#objectEditButton").click(function () { showEditObjectForm(selectedNode); });
+                $("#objectDeleteButton").click(function () { showDeleteObjectForm(selectedNode); });
+
+                $("form").submit(function (e) {
                     e.preventDefault();
                     submitObjectForm($(this));
                 })
@@ -166,25 +173,26 @@
         </section>
 
         <section id="twinsConfig" class="twins-config">
-                <div id="twinsConfigWrapper" class="twins-config-wrapper">
-                        <ul>
-                            <li class="list-item" style="">
-                                <label class="twins-config-label">Azure Digital Twins Instance Root Url
-                                <input id="twinsUrl" type="text" placeholder="https://[instancename].[region].azuresmartspaces.net/"/>
-                                </label>
-                            </li>
-                            <li class="list-item" style="">
-                                <label class="twins-config-label">Tenant Id
-                                <input id="twinsTenantId" type="text" placeholder="00000000-0000-0000-0000-000000000000"/>
-                                </label>
-                            </li>
-                            <li class="list-item" style="">
-                                <label class="twins-config-label">Client Id
-                                <input id="twinsClientId" type="text" placeholder="00000000-0000-0000-0000-000000000000"/>
-                                </label>
-                            </li>
-                        </ul>
-                </div>
+            <div id="twinsConfigWrapper" class="twins-config-wrapper">
+                <ul>
+                    <li class="list-item" style="">
+                        <label class="twins-config-label">
+                            Azure Digital Twins Instance Root Url
+                        <input id="twinsUrl" type="text" placeholder="https://[instancename].[region].azuresmartspaces.net/" />
+                        </label>
+                    </li>
+                    <li class="list-item" style="">
+                        <label class="twins-config-label">Tenant Id
+                        <input id="twinsTenantId" type="text" placeholder="00000000-0000-0000-0000-000000000000" />
+                        </label>
+                    </li>
+                    <li class="list-item" style="">
+                        <label class="twins-config-label">Client Id
+                        <input id="twinsClientId" type="text" placeholder="00000000-0000-0000-0000-000000000000" />
+                        </label>
+                    </li>
+                </ul>
+            </div>
         </section>
 
         <!-- Main Visualizer stuff -->
@@ -204,6 +212,8 @@
                                 <li class="selected"><span class="space">Spaces</span></li>
                                 <li><span class="device">Devices</span></li>
                                 <li><span class="sensor">Sensors</span></li>
+                                <li><span class="userdefinedfunctions">UserDefinedFunctions</span></li>
+                                <li><span class="matchers">Matchers</span></li>
                             </ul>
                         </li>
                         <li id="refreshButton" class="refresh">Refresh</li>
@@ -219,37 +229,37 @@
 
             <!-- API panel to execute API calls -->
             <aside id="apiPanel" class="drawer">
-                    <header>
-                            <h2 class="api">Digital Twin API</h2>
-                            <span class="drawer-close" id="apiCloseButton"></span>
-                    </header>
-                    <section id="apiPanelContent" class="drawer-content">
-                        <!-- Drawer for the form. -->
-                        <div id="apiPanelDrawer" class="drawer-slide-over">
-                            <form name="apiForm">
-                                <h3>Call (excluding base url)</h3>
-                                <div class="form-container">
-                                    <label>API (<a href="https://docs.westcentralus.azuresmartspaces.net/management/swagger" target="_new">Swagger</a>)</label>
-                                    <input type="text" name="apiCall"/>
-                                    <label>Method</label>
-                                    <select name="apiMethod">
-                                        <option>GET</option>
-                                        <option>PUT</option>
-                                        <option>POST</option>
-                                        <option>DELETE</option>
-                                        <option>PATCH</option>
-                                    </select>
-                                    <label>JSON Input</label>
-                                    <textarea rows="3" name="apiJSON" class="json"></textarea>
-                                    <label>JSON Output</label>
-                                    <textarea rows="7" name="apiJSONOutput" id="apiJSONOutput" disabled="true" class="json"></textarea>
-                                </div>
-                                <div class="button-container">  
-                                    <input type="submit" class="button confirm" value="Execute"> 
-                                </div>
-                            </form>
-                        </div>
-                    </section>
+                <header>
+                   <h2 class="api">Digital Twin API</h2>
+                   <span class="drawer-close" id="apiCloseButton"></span>
+               </header>
+               <section id="apiPanelContent" class="drawer-content">
+                   <!-- Drawer for the form. -->
+                   <div id="apiPanelDrawer" class="drawer-slide-over">
+                       <form name="apiForm">
+                           <h3>Call (excluding base url)</h3>
+                           <div class="form-container">
+                               <label>API (<a href="https://docs.westcentralus.azuresmartspaces.net/management/swagger" target="_new">Swagger</a>)</label>
+                               <input type="text" name="apiCall"/>
+                               <label>Method</label>
+                               <select name="apiMethod">
+                                   <option>GET</option>
+                                   <option>PUT</option>
+                                   <option>POST</option>
+                                   <option>DELETE</option>
+                                   <option>PATCH</option>
+                               </select>
+                               <label>JSON Input</label>
+                               <textarea rows="3" name="apiJSON" class="json"></textarea>
+                               <label>JSON Output</label>
+                               <textarea rows="7" name="apiJSONOutput" id="apiJSONOutput" disabled="true" class="json"></textarea>
+                           </div>
+                           <div class="button-container">  
+                               <input type="submit" class="button confirm" value="Execute">
+                           </div>
+                       </form>
+                   </div>
+               </section>
             </aside>
 
             <!-- Info panel that provides more info on the selected node -->
@@ -259,9 +269,15 @@
                     <h2 class="space">Space</h2>
                     <span class="drawer-close" id="infoCloseButton"></span>
                     <ul class='action-menu'>
-                        <li id='objectAddButton' class='add'>Add Child Space</li>
-                        <li id='objectAddDeviceButton' class='add'>Add Device</li>
-                        <li id='objectAddSensorButton' class='addSensor'>Add Sensor</li>
+                        <li id="addNodesButton" class="addNode">Add Node
+                            <ul id="addNodeSubMenu" class="addNodeSubMenu">
+                                <li id='objectAddButton' class='add'>Child Space</li>
+                                <li id='objectAddDeviceButton' class='add'>Device</li>
+                                <li id='objectAddSensorButton' class='addSensor'>Sensor</li>
+                                <li id='objectAddUserDefinedFunctionsButton' class='addUDF'>User-defined Functions</li>
+                                <li id='objectAddMatchersButton' class='addMatchers'>Matcher</li>
+                            </ul>
+                        </li>
                         <li id='objectEditButton' class='edit'>Edit</li>
                         <li id='objectDeleteButton' class='delete'>Delete</li>
                     </ul>
