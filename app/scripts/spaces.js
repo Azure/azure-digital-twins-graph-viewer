@@ -4,15 +4,14 @@
 // An empty array that will hold all the nodes to be displayed.
 var stagedNodes = [];
 // An array that has the object types that should be loaded from Digital Twins for the graph.
-// Currently we can load space, device and sensor objects only.
-var objectTypesToLoad = ["space", "device", "sensor"];
+var objectTypesToLoad = ["space", "device", "sensor", "matchers", "userdefinedfunctions"];
 var oDataTop = 999;
 // Dictionary to keep track of oDataSkip count for each object type
 var oDataSkips = {}
 
-// Get a single Digital Twin Object
-function getDigitalTwinsObject(id, type, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+// Get a Digital Twin JSON using command
+function executeApiDigitalTwinJSON(api, command, json, fComplete) {
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
     authContext.acquireToken(
         resource,
         function (error, token) {
@@ -22,16 +21,80 @@ function getDigitalTwinsObject(id, type, fComplete) {
             }
 
             // Let's create the correct API url.
-            var url = baseUrl + "api/v1.0/";
+            var url = getBaseUrl() + "api/v1.0/" + api;
+
+            var ajaxJSON = {
+                type: command,
+                xhrFields: {
+                    withCredentials: true
+                },
+                headers: { "Authorization": 'Bearer ' + token },
+                url: url
+            }
+
+            switch (command) {
+                case "PUT":
+                    ajaxJSON.data = json;
+                    ajaxJSON.contentType = "application/json";
+                break;
+                case "PATCH":
+                    ajaxJSON.data = json;
+                    ajaxJSON.contentType = "application/json";
+                break;
+                case "POST":
+                    ajaxJSON.data = json;
+                    ajaxJSON.contentType = "application/json";
+                break;
+                case "DELETE":
+                    ajaxJSON.contentType = "application/json";
+                break;
+            }
+
+            // Make the call.
+            $.ajax( ajaxJSON ).success(function (data) {
+                fComplete(data);
+            }).error(function (err) {
+                showAlert("error",
+                "API Execution",
+                "API error: " + JSON.stringify(err),
+                false);
+            });
+        }
+    );
+
+}
+
+// Get a single Digital Twin Object
+function getDigitalTwinsObject(id, type, fComplete) {
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
+    authContext.acquireToken(
+        resource,
+        function (error, token) {
+            if (error || !token) {
+                handleTokenError(error);
+                return;
+            }
+
+            // Let's create the correct API url.
+            var url = getBaseUrl() + "api/v1.0/";
             switch (type) {
                 case "space":
-                    url = url + "spaces/" + id + "?includes=properties,types,values,fullPath";
+                    url = url + "spaces/" + id + "?includes=properties,types,values,fullPath,location";
+                    break;
+                case "resource":
+                    url = url + "resources/" + id + "?includes=properties,types,values,fullPath";
                     break;
                 case "device":
-                    url = url + "devices/" + id + "?includes=properties,types,fullPath";
+                    url = url + "devices/" + id + "?includes=properties,types,fullPath,location,iothub";
                     break;
                 case "sensor":
                     url = url + "sensors/" + id + "?includes=properties,types,fullPath,value";
+                    break;
+                case "userdefinedfunctions":
+                    url = url + "userdefinedfunctions/" + id + "?includes=description,space,fullpath,matchers ";
+                    break;
+                case "matchers":
+                    url = url + "matchers/" + id + "?includes=description,space,conditions,userdefinedfunctions";
                     break;
                 default:
                     console.log("Unknown object type: " + type);
@@ -59,7 +122,7 @@ function getDigitalTwinsObject(id, type, fComplete) {
 // Get all the objects of a certain type and add them to the staged nodes var.
 // This function is called to load the whole model.
 function getDigitalTwinsObjects(type, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
     authContext.acquireToken(
         resource,
         function (error, token) {
@@ -113,7 +176,7 @@ function executeDigitalTwinsRequest(token, type, fComplete) {
 function getRequestUrlWithoDataSkip(type) {
 
     // Create the URL based on which type of object we want to get.
-    var url = baseUrl + "api/v1.0/";
+    var url = getBaseUrl() + "api/v1.0/";
     switch (type) {
         case "space":
             url = url + "spaces" + "?$top=" + oDataTop + "&$skip=" + oDataSkips[type];
@@ -123,6 +186,12 @@ function getRequestUrlWithoDataSkip(type) {
             break;
         case "sensor":
             url = url + "sensors" + "?$top=" + oDataTop + "&$skip=" + oDataSkips[type];
+            break;
+        case "userdefinedfunctions":
+            url = url + "userdefinedfunctions" + "?$top=" + oDataTop + "&$skip=" + oDataSkips[type];
+            break;
+        case "matchers":
+            url = url + "matchers" + "?$top=" + oDataTop + "&$skip=" + oDataSkips[type];
             break;
         default:
             return;
@@ -139,7 +208,9 @@ function extendNodeProperties(node, type) {
     switch (type) {
         case "space": label = node.friendlyName ? node.friendlyName : node.name; break;
         case "device": label = node.friendlyName ? node.friendlyName : node.name; break;
-        case "sensor": label = node.friendlyName ? node.friendlyName : node.port; break;
+        case "sensor": label = node.friendlyName ? node.friendlyName : node.hardwareId; break;
+        case "userdefinedfunctions": label = node.friendlyName ? node.friendlyName : node.hardwareId; break;
+        case "matchers": label = node.friendlyName ? node.friendlyName : node.hardwareId; break;
         default: return;
     }
     $.extend(node, {
@@ -155,7 +226,7 @@ function extendNodeProperties(node, type) {
 // Get all the objects of a certain type and add them to the staged nodes var.
 // This function is called to load the whole model.
 function getDigitalTwinsTypes(categories, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
     authContext.acquireToken(
         resource,
         function (error, token) {
@@ -165,7 +236,7 @@ function getDigitalTwinsTypes(categories, fComplete) {
             }
 
             // Create the URL based on which type of object we want to get.
-            var url = baseUrl + "api/v1.0/types?disabled=false&categories=" + categories.join();
+            var url = getBaseUrl() + "api/v1.0/types?disabled=false&categories=" + categories.join();
 
             // Make the API call.
             $.ajax({
@@ -186,7 +257,7 @@ function getDigitalTwinsTypes(categories, fComplete) {
 
 // Create a new Digital Twins Object
 function postDigitalTwinsObject(objectType, jsonData, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
 
     authContext.acquireToken(
         resource,
@@ -197,10 +268,25 @@ function postDigitalTwinsObject(objectType, jsonData, fComplete) {
             }
 
             // Create the URL based on which type of object we want to get.
-            var url = baseUrl + "api/v1.0/";
+            var url = getBaseUrl() + "api/v1.0/";
             switch (objectType) {
                 case "space":
                     url = url + "spaces";
+                    break;
+                case "resource":
+                    url = url + "resources";
+                    break;
+                case "device":
+                    url = url + "devices";
+                    break;
+                case "sensor":
+                    url = url + "sensors";
+                    break;
+                case "userdefinedfunctions":
+                    url = url + "userdefinedfunctions";
+                    break;
+                case "matchers":
+                    url = url + "matchers";
                     break;
                 default:
                     return;
@@ -224,7 +310,8 @@ function postDigitalTwinsObject(objectType, jsonData, fComplete) {
 
 // This function let's you make a patch request to the digital twins model.
 function patchDigitalTwins(object, objectType, jsonData, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
 
     authContext.acquireToken(
         resource,
@@ -235,7 +322,7 @@ function patchDigitalTwins(object, objectType, jsonData, fComplete) {
             }
 
             // Create the URL based on which type of object we want to delete.
-            var url = baseUrl + "api/v1.0/";
+            var url = getBaseUrl() + "api/v1.0/";
             switch (objectType) {
                 case "space":
                     url = url + "spaces/";
@@ -245,6 +332,12 @@ function patchDigitalTwins(object, objectType, jsonData, fComplete) {
                     break;
                 case "sensor":
                     url = url + "sensors/";
+                    break;
+                case "userdefinedfunctions":
+                    url = url + "userdefinedfunctions/";
+                    break;
+                case "matchers":
+                    url = url + "matchers/";
                     break;
                 default:
                     return;
@@ -267,25 +360,38 @@ function patchDigitalTwins(object, objectType, jsonData, fComplete) {
 
                 //If the dragged object is of type device, we will send additional patch requests to also update the parents space of the sensors of the dragged device
                 if (objectType == "device") {
-                    object._children.forEach(function (childSensor) {
-                        patchDeviceChildSensors(childSensor, jsonData, token);
-                    });
+                    // If device sensors are currently displayed we need the children array
+                    if(Array.isArray(object.children) && object.children.length){
+                        object.children.forEach(function (childSensor) {
+                            patchDeviceChildSensors(object.spaceId, childSensor, jsonData, token);
+                            });
+                    }
+                    // If device sensors are currently not display, we need the _children array
+                    if(Array.isArray(object._children) && object._children.length){
+                        object._children.forEach(function (childSensor) {
+                        patchDeviceChildSensors(object.spaceId, childSensor, jsonData, token);
+                        });
+                    }
                 }
-            })
-
-                .complete(function (xhr, status) {
+            }).complete(function (xhr, status) {
                     console.log(status);
                     console.log(xhr);
-                    fComplete(status);
+                    fComplete(status, xhr.responseJSON);
                 });
         }
     );
 }
 
 //Function to update the parent space of sensors of a device 
-function patchDeviceChildSensors(childSensor, jsonData, token) {
+function patchDeviceChildSensors(deviceSpaceId, childSensor, jsonData, token) {
 
-    var url = baseUrl + "api/v1.0/sensors/" + childSensor.id;
+    if (childSensor.spaceId != deviceSpaceId) {
+        patchDeviceChildSensors(childSensor, jsonData, token);
+        console.log("Skipped patching sensor " + childSensor.id + "due to it having a different parent space ID than its parent device")
+        return;
+    }
+
+    var url = getBaseUrl() + "api/v1.0/sensors/" + childSensor.id;
 
     $.ajax({
         type: "PATCH",
@@ -303,7 +409,7 @@ function patchDeviceChildSensors(childSensor, jsonData, token) {
 }
 
 function deleteDigitalTwinsObject(objectId, objectType, fComplete) {
-    var resource = authContext.getResourceForEndpoint(baseUrl);
+    var resource = authContext.getResourceForEndpoint(getBaseUrl());
 
     authContext.acquireToken(
         resource,
@@ -314,7 +420,7 @@ function deleteDigitalTwinsObject(objectId, objectType, fComplete) {
             }
 
             // Create the URL based on which type of object we want to delete.
-            var url = baseUrl + "api/v1.0/";
+            var url = getBaseUrl() + "api/v1.0/";
             switch (objectType) {
                 case "space":
                     url = url + "spaces/";
@@ -324,6 +430,12 @@ function deleteDigitalTwinsObject(objectId, objectType, fComplete) {
                     break;
                 case "sensor":
                     url = url + "sensors/";
+                    break;
+                case "userdefinedfunctions":
+                    url = url + "userdefinedfunctions/";
+                    break;
+                case "matchers":
+                    url = url + "matchers/";
                     break;
                 default:
                     return;
@@ -340,7 +452,8 @@ function deleteDigitalTwinsObject(objectId, objectType, fComplete) {
                 url: url,
                 contentType: "application/json"
             }).complete(function (xhr, status) {
-                fComplete(status);
+                xhr.responseJSON['typeName'] = objectType;
+                fComplete(status, xhr.responseJSON);
             });
         }
     );
@@ -370,6 +483,12 @@ function showGraphData(data) {
                 break;
             case "sensor":
                 var parent = dataMap[node.deviceId];
+                break;
+            case "userdefinedfunctions":
+                var parent = dataMap[node.spaceId];
+                break;
+            case "matchers":
+                var parent = dataMap[node.spaceId];
                 break;
             default:
                 break;
@@ -420,14 +539,45 @@ function refreshData() {
                 "No data loaded",
                 "No data was returned from Digital Twins. Make sure you have added at least one space and have authorization to view it.",
                 false);
+            $("#addRootButton").show();
         }
         $("#graphLoaderIcon").hide();
     });
 }
 
+function addRootSpace() {
+    // Define root space
+    var rootspace = {
+        "Name": "Root Space",
+        "Type": null,
+        "ParentSpaceId": "",
+        "Subtype": null
+    }
+
+    $("#addRootButton").hide();
+
+    // Create the deferred object
+    var deferred = $.Deferred();
+
+    addObject("space", rootspace, function(data) {
+        if (data){
+            alert(JSON.stringify(data));
+            var resource = {
+                "Type": "IoTHub",
+                "SpaceId": data.id
+            }
+            addObject("resource", resource, function(s) {
+                refreshData();
+                deferred.resolve(s);
+            });
+        }
+        else {
+            deferred.resolve(data);
+        }
+    });
+}
+
 function addObject(type, data, fComplete) {
-    // for now we only handle creation of spaces
-    if (type != "space") return;
     // Let's make the call
     postDigitalTwinsObject(type, JSON.stringify(data), function (xhr, status) {
         switch (status) {
@@ -438,18 +588,20 @@ function addObject(type, data, fComplete) {
                     node = extendNodeProperties(node, type);
                     // Add it to the graph
                     addNodeToGraph(node);
-                    fComplete(true);
+                    refreshData();
+                    fComplete(node);
                 });
                 break;
             default:
-                fComplete(false);
+                fComplete(xhr.responseJSON);
                 break;
         }
     });
 }
 
+
 function updateObject(object, data, fComplete) {
-    patchDigitalTwins(object.id, object.type, JSON.stringify(data), function (status) {
+    patchDigitalTwins(object, object.type, JSON.stringify(data), function (status, response) {
         switch (status) {
             case "nocontent":
                 // We may need to update the label if the names have changed..
@@ -458,6 +610,8 @@ function updateObject(object, data, fComplete) {
                     case "space": label = data.friendlyName ? data.friendlyName : data.name; break;
                     case "device": label = data.friendlyName ? data.friendlyName : data.name; break;
                     case "sensor": label = data.friendlyName ? data.friendlyName : data.port; break;
+                    case "userdefinedfunctions": label = data.friendlyName ? data.friendlyName : data.port; break;
+                    case "matchers": label = data.friendlyName ? data.friendlyName : data.port; break;
                     default: return;
                 }
                 $.extend(data, {
@@ -465,10 +619,11 @@ function updateObject(object, data, fComplete) {
                 });
                 // Let's call the function to update the node in the graph.
                 updateNodeInGraph(object, data);
-                fComplete(true);
+                refreshData();
+                fComplete(response);
                 break;
             default:
-                fComplete(false);
+                fComplete(response);
                 break;
         }
     });
@@ -476,14 +631,15 @@ function updateObject(object, data, fComplete) {
 
 function deleteObject(object, fComplete) {
     // Let's make the call..
-    deleteDigitalTwinsObject(object.id, object.type, function (status) {
+    deleteDigitalTwinsObject(object.id, object.type, function (status, response) {
         switch (status) {
             case "nocontent":
                 removeNodeFromGraph(object);
-                fComplete(true);
+                refreshData();
+                fComplete(response);
                 break;
             default:
-                fComplete(false);
+                fComplete(response);
                 break;
         }
 
@@ -509,7 +665,7 @@ function objectDragAction(node, target, fEndDrag) {
     // Form the url and the body to send to smart spaces. 
     // This depends on the type of object to change, since they record their parent in a different way.
     var jsonData;
-    if (node.type == "device") {
+    if (node.type == "device" ||node.type=="userdefinedfunction"||node.type=="matchers") {
         jsonData = JSON.stringify({ "spaceId": target.id });
     }
     else if (node.type == "space") {
@@ -519,7 +675,12 @@ function objectDragAction(node, target, fEndDrag) {
     // Make the call
     $("#graphLoaderIcon").show();
     var updateDigitalTwins = $.Deferred();
-    patchDigitalTwins(node, node.type, jsonData, function (s) { updateDigitalTwins.resolve(s); });
+    patchDigitalTwins(node, node.type, jsonData, function (status, response) { 
+        if (response)
+            updateDigitalTwins.resolve(response.error.message); 
+        else
+            updateDigitalTwins.resolve(status); 
+    });
 
     // Call is done, let's see the result
     $.when(updateDigitalTwins).done(function (status) {
@@ -531,12 +692,13 @@ function objectDragAction(node, target, fEndDrag) {
                     "Success",
                     "<strong>" + node.name + "</strong> was succesfully moved to <strong>" + target.name + "</strong>."
                 );
+                refreshData();
                 fEndDrag(true);
                 break;
             default:
                 showAlert("error",
                     "Update failed",
-                    "You probably don't have permissions to update the model."
+                    status
                 );
                 fEndDrag(false);
                 break;

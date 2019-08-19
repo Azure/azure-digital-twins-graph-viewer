@@ -1,9 +1,11 @@
 # Introduction
 This "Azure Digital Twins Graph Viewer" serves as a front-end to the [Azure Digital Twins](https://azure.microsoft.com/en-us/services/digital-twins/) spatial intelligence graph. It provides the following features:
 - Visualizing the relationship between spaces, devices and sensors created in the Azure Digital Twins model
-- Add, Edit and Delete Spaces and Devices
+- Add, Edit and Delete Spaces, Devices and Sensors
 - Changing the hierarchy by moving devices and spaces to different spaces
 - Viewing basic properties and values of nodes
+- Add a root space and IoT Hub as resource if the digital twin is empty
+- Execute direct API calls to do all other digital twin interactions not implemented
 
 The Graph Viewer is built to be a lightweight, adaptable front-end. It uses only client-side code and as such should be easy to deploy in different environments. 
 
@@ -28,29 +30,31 @@ In order to connect to Azure Digital Twins, the Graph Viewer must be registered 
 4. Go to Settings / Permissions and select the Azure Digital Twins service from the API list. Specify 'Read/Write Access' as the required permission. 
 <img src="media/aadapiscreen.png" width="500px" />
 5. Confirm the screen and click 'Grant permissions.' <br />
-6. Click the 'Edit Manifest' button. In the manifest, change the value for the 'oauth2AllowImplicitFlow' setting to 'true' and save.  
+6. Click the 'Edit Manifest' button on the app blade. In the manifest, change the value for the 'oauth2AllowImplicitFlow' setting to 'true' and save.  
 <img src="media/manifest.png" width="450px" />
 
 
 ## Prepare files
 - Clone or download the repository files to your computer. 
-- Open index.html in your favorite editor and go to the script block at the top of the page. Update the values for the three variables:
-    - twinsInstanceRoot: This is the full URL of your Azure Digital Twins instance, ending in `azuresmartspaces.net/`.
-    - tenant: This is the name of your Azure tenant, for example `contoso.onmicrosoft.com`
-    - clientId: This is the application id of the Azure Active Directory application you created in the previous step. It is formatted as a Guid.
 
 ## Deploy
 Upload the files you've prepared in the previous step to your webserver. For example, you could create an Azure web app and deploy using FTP or VSTS. Alternatively, you could run this off a localhost webserver. Just make sure the reply-url in the AzureAD application has been set to the appropriate URL.
 Running this locally by opening the files is not supported, since the login redirect from AzureAD would fail.
 
 After deploying, you should be able to navigate to your deployment and sign in to the Graph Viewer.
+When you open the Graph Viewer webpage, enter the following information in the text boxes:
+- twinsInstanceRoot: This is the full URL of your Azure Digital Twins instance, ending in `azuresmartspaces.net`.
+- tenant: This is the name or id of your Azure tenant, for example `6f68d89e-8f99-4798-8850-a5d557c3341e`
+- clientId: This is the application id of the Azure Active Directory application you created in the previous step. It is formatted as a Guid.
 
+## Run as Docker container
 
-## Known Limitations
-### Public Preview Limitations of max number of objects.
-During the public preview of Azure Digital Twins, certain service limits are in place. These are described in the [documentation](https://docs.microsoft.com/en-us/azure/digital-twins/concepts-service-limits). One of these limits is that the API calls to the /devices, /spaces and  /sensors endpoints will not return more than 1000 objects. In the graph viewer, objects over that limit will not be returned. Future versions will handle this based on the limits on Digital Twins at GA time.
-### Not able to add new devices and sensors
-The current version does not allow you to create a device or a sensors. Functionality for devices and sensors is limited to editting and deleting. 
+If you want to run the the Graph Viewer as Docker container on your machine, you can execute the following commands from within the root directory of the repository:
+
+- `docker build . -t azure-digital-twins-viewer`
+- `docker run -p 8080:80 azure-digital-twins-viewer`
+
+Open your browser and go to http://localhost:8080 to view the Graph viewer locally. 
 
 # Contributing
 
@@ -65,8 +69,3 @@ provided by the bot. You will only need to do this once across all repos using o
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
-
-## Contributors
-
-Joost ten Kattelaar<br />
-Niels Buit

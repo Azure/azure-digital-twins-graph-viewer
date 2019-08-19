@@ -1,4 +1,4 @@
-/*
+﻿/*
 Copyright (c) 2013-2016, Rob Schmuecker
 All rights reserved.
 
@@ -46,6 +46,9 @@ var recursiveCounter = 0;
 var viewerWidth, viewerHeight;
 var baseSVG, svgGroup, zoomSlider;
 
+// Default number of levels in the graph that will be expanded on load (1=only root)
+var expandedDepthOnLoad = 3;
+
 // define a d3 diagonal projection for use by the node paths later on.
 var diagonal = d3.svg.diagonal()
     .source(function(d) {
@@ -91,10 +94,10 @@ function initializeGraphVisualizer(data) {
     // Create the clip path for the node text so they don't interfere with the expand/collapse button
     svgDefs.append("clipPath")
         .attr("id", "nodeTextClipPath").append("rect")
-            .attr("width", nodeWidth - nodeHeight - 30)
-            .attr("height", nodeHeight)
-            .attr('y', (nodeHeight/2) * -1)
-            .attr("x", nodeHeight+5+(nodeWidth/2) * -1);
+        .attr("width", nodeWidth - nodeHeight - 30)
+        .attr("height", nodeHeight)
+        .attr('y', (nodeHeight/2) * -1)
+        .attr("x", nodeHeight+5+(nodeWidth/2)*-1);
 
     svgDefs.append("clipPath")
         .attr("id", "nodeClipPathLarge").append("rect")
@@ -138,26 +141,26 @@ function initializeGraphVisualizer(data) {
 
     // Set the zoom slider and on input change the zoomListener.
     zoomSlider = d3.select("#zoomSlider")
-    .attr("min", zoomListener.scaleExtent()[0])
-    .attr("max", zoomListener.scaleExtent()[1])
-    .attr("step", (zoomListener.scaleExtent()[1] - zoomListener.scaleExtent()[0]) / 100)
-    .attr("value", zoomListener.scaleExtent()[1])
-    .on("input", function() {
-        var center = [viewerWidth / 2, viewerHeight / 2],
-        translate = zoomListener.translate(),
-        translate0 = [],
-        l = [],
-        view = {x: translate[0], y: translate[1], k: zoomListener.scale()}
+      .attr("min", zoomListener.scaleExtent()[0])
+      .attr("max", zoomListener.scaleExtent()[1])
+      .attr("step", (zoomListener.scaleExtent()[1] - zoomListener.scaleExtent()[0])/100)
+      .attr("value", zoomListener.scaleExtent()[1])
+      .on("input", function () {
+          var center = [viewerWidth / 2, viewerHeight / 2],
+          translate = zoomListener.translate(),
+          translate0 = [],
+          l = [],
+          view = {x: translate[0], y: translate[1], k: zoomListener.scale()}
 
-        translate0 = [(center[0] - view.x) / view.k, (center[1] - view.y) / view.k];
-        view.k = this.value;
-        l = [translate0[0] * view.k + view.x, translate0[1] * view.k + view.y];
+          translate0 = [(center[0] - view.x) / view.k, (center[1] - view.y) / view.k];
+          view.k = this.value;
+          l = [translate0[0] * view.k + view.x, translate0[1] * view.k + view.y];
 
-        view.x += center[0] - l[0];
-        view.y += center[1] - l[1];
+          view.x += center[0] - l[0];
+          view.y += center[1] - l[1];
 
-        zoomListener.scale(this.value).translate([view.x, view.y]).event(svgGroup);
-    });
+          zoomListener.scale(this.value).translate([view.x, view.y]).event(svgGroup);
+      });
 
     // Define the root
     root = treeData;
@@ -199,7 +202,8 @@ function updateChildren(parent, types) {
         parent._children = [];
         children.forEach(function(child) {
             // Check if this is something we want to show..
-            if (types.includes(child.type)) {
+            // We can use the recursivecounter as an indicator for the depth of the current node, so we don't expand _all_ levels on load to keep the graph managable. 
+            if (types.includes(child.type) && (recursiveCounter < expandedDepthOnLoad) ) {
                 parent.children.push(child);
             } else {
                 parent._children.push(child);
@@ -220,8 +224,8 @@ function updateChildren(parent, types) {
 function showObjectTypes() {
     var objectTypesToShow = [];
     $("#showSubMenu").find("li.selected > span").each(function() {
-            objectTypesToShow.push($(this).attr("class"));
-        });
+          objectTypesToShow.push($(this).attr("class"));
+      });
     updateChildren(treeData, objectTypesToShow);
 }
 
@@ -269,7 +273,7 @@ function addNodeToGraph(node) {
         // Let's first get all the child nodes (both hidden and visible) and reset the child count.
         var children = (parent.children || (parent.children = [])).concat((parent._children || (parent._children = [])));
         if (children.length) {
-            children.forEach(function(child) {
+            children.forEach(function (child) {
                 // Check if this is the parent of the new node
                 if (node.parentSpaceId == child.id) {
                     // Add it to the model.
@@ -309,8 +313,8 @@ function removeNodeFromGraph(node) {
     // Remove it's children.
     var children = getChildren(node, []);
     if (children.length) {
-        children.forEach(function(child) {
-            var childDomNode = d3.select('[id="'+child.id+'"]');
+        children.forEach(function (child) {
+            var childDomNode = d3.select('[id="' + child.id + '"]');
             childDomNode.select("g.scaler").transition().duration(300).attr("transform", "scale(0)").remove();
         })
     }
@@ -355,7 +359,7 @@ function updateGraphVisualizer(source, animated) {
 
     // Set widths between levels based on maxLabelLength.
     nodes.forEach(function (d) {
-        d.y = (d.depth * (nodeWidth+160))
+        d.y = (d.depth * (nodeWidth + 160))
     });
 
     // Update the nodes…
@@ -384,32 +388,32 @@ function updateGraphVisualizer(source, animated) {
         .attr("class", "nodeContainer")
         .attr('width', nodeWidth)
         .attr('height', nodeHeight)
-        .attr('y', (nodeHeight/2) * -1)
-        .attr('x', (nodeWidth/2) * -1)
+        .attr('y', (nodeHeight / 2) * -1)
+        .attr('x', (nodeWidth / 2) * -1)
         .on("click", function (d) {
             nodeClicked(d, this.parentNode);
         })
-        .on("mouseover", function(d) {
+        .on("mouseover", function (d) {
             nodeMouseOver(d);
         })
-        .on("mouseout", function(d) {
+        .on("mouseout", function (d) {
             nodeMouseOut(d);
         });
 
     nodeContainer.append("rect")
         .attr('class', function (d) {
-            return 'nodeIndicator '+d.type;
+            return 'nodeIndicator ' + d.type;
         })
         .attr('width', nodeHeight)
         .attr('height', nodeHeight)
-        .attr('y', (nodeHeight/2) * -1)
-        .attr('x', (nodeWidth/2) * -1)
+        .attr('y', (nodeHeight / 2) * -1)
+        .attr('x', (nodeWidth / 2) * -1)
         .attr("pointer-events", "none");
 
     // Add the icon for the indicator based on their type.
     nodeContainer.append("text")
         .attr("class", "nodeIndicatorType")
-        .attr("x", ((nodeWidth/2) * -1) + 5)
+        .attr("x", ((nodeWidth / 2) * -1) + 5)
         .attr("text-anchor", "start")
         .attr("y", 8)
         .attr("pointer-events", "none")
@@ -418,27 +422,29 @@ function updateGraphVisualizer(source, animated) {
                 case "space": return "";
                 case "device": return "";
                 case "sensor": return "";
+                case "userdefinedfunctions": return "";
+                case "matchers": return "";
                 default: return "";
             }
         })
 
     nodeContainer.append("text")
-        .attr("x", nodeHeight+5+(nodeWidth/2) * -1)
+        .attr("x", nodeHeight + 5 + (nodeWidth / 2) * -1)
         .attr("y", 4.5)
         .attr('class', 'nodeText')
         .attr("width", nodeWidth)
         .attr("text-anchor", "start")
         .text(function (d) {
-            return d.label;
-         })
+            return d.label || d.name;
+        })
         .attr("style", "clip-path: url(#nodeTextClipPath);")
         .attr("pointer-events", "none");
 
     // Create the drag indicator that shows when item can be dragged there..
     // We cannot drag sensors.. so we don't create one if the node is a sensor.
-    var nodeDragIndicator = nodeEnter.filter(function(d){
-            return (d.type != "sensor");
-        })
+    var nodeDragIndicator = nodeEnter.filter(function (d) {
+        return (d.type != "sensor");
+    })
         .append("g")
         .attr("class", "addIndicator");
 
@@ -460,9 +466,9 @@ function updateGraphVisualizer(source, animated) {
     // First clear all the nodeCollapse group that holds the elements so we can create new ones.
     node.selectAll("g.nodeCollapse").remove();
 
-    var nodeCollapse = node.filter(function(d) {
-            return (d.childCount > 0);
-        })
+    var nodeCollapse = node.filter(function (d) {
+        return (d.childCount > 0);
+    })
         .select("g.scaler")
         .append("g")
         .attr("class", "nodeCollapse");
@@ -470,20 +476,20 @@ function updateGraphVisualizer(source, animated) {
     nodeCollapse.append("rect")
         .attr("width", nodeHeight - 10)
         .attr("height", nodeHeight - 10)
-        .attr("x", ((nodeWidth/2)-nodeHeight) + 5)
-        .attr("y", ((nodeHeight/2) * -1) + 5)
+        .attr("x", ((nodeWidth / 2) - nodeHeight) + 5)
+        .attr("y", ((nodeHeight / 2) * -1) + 5)
         .attr("rx", 1)
         .attr("ry", 1)
         .attr("class", "collapse")
         .on('click', collapseClicked);
 
     nodeCollapse.append("text")
-        .attr("x", (nodeWidth/2)-13)
+        .attr("x", (nodeWidth / 2) - 13)
         .attr("dy", 4)
         .attr("text-anchor", "middle")
         .attr("class", "collapseText")
         .attr("pointer-events", "none")
-        .text(function(d) {
+        .text(function (d) {
             return d._children.length ? "+" : "–";
         });
 
@@ -550,7 +556,7 @@ function updateGraphVisualizer(source, animated) {
 }
 
 function nodeMouseOver(d) {
-    var domNode = d3.select('[id="'+d.id+'"]');
+    var domNode = d3.select('[id="' + d.id + '"]');
     /* domNode.select(".nodeContainer")
         .transition()
         .duration(250)
@@ -564,7 +570,7 @@ function nodeMouseOver(d) {
 }
 
 function nodeMouseOut(d) {
-    var domNode = d3.select('[id="'+d.id+'"]');
+    var domNode = d3.select('[id="' + d.id + '"]');
     /* domNode.select(".nodeContainer")
         .transition()
         .duration(250)
@@ -598,7 +604,7 @@ function selectNode(d, animated) {
     showInfoPanel(d);
     populateBreadCrumb(d);
     var duration = animated ? 400 : 0;
-    d3.select('[id="'+d.id+'"]').select("rect.nodeIndicator").transition().duration(duration).attr("width", nodeWidth);
+    d3.select('[id="' + d.id + '"]').select("rect.nodeIndicator").transition().duration(duration).attr("width", nodeWidth);
     selectedNode = d;
 }
 
@@ -606,7 +612,7 @@ function selectNode(d, animated) {
 function deselectNode(d, animated) {
     if (!d) return;
     var duration = animated ? 400 : 0;
-    d3.select('[id="'+d.id+'"]').select("rect.nodeIndicator").transition().duration(duration).attr("width", nodeHeight);
+    d3.select('[id="' + d.id + '"]').select("rect.nodeIndicator").transition().duration(duration).attr("width", nodeHeight);
     selectedNode = null;
 }
 
@@ -615,7 +621,13 @@ function populateBreadCrumb(d) {
     $("#breadCrumbList").empty();
     cycle(d);
     function cycle(d) {
-        $("#breadCrumbList").prepend("<li><a>"+ d.label +"</a></li>");
+        if (d.label != "") {
+            $("#breadCrumbList").prepend("<li><a>" + d.label + "</a></li>");
+        }
+        else {
+            $("#breadCrumbList").prepend("<li><a>" + d.name + "</a></li>");
+        }
+
         if (d.parent) {
             cycle(d.parent);
         }
@@ -625,7 +637,7 @@ function populateBreadCrumb(d) {
 // Function to center node when clicked/dropped so node doesn't get lost when collapsing/moving with large amount of children.
 function centerNode(node, animated) {
     scale = zoomListener.scale();
-    duration = animated ? animationDuration : 0 ;
+    duration = animated ? animationDuration : 0;
     x = -node.y0;
     y = -node.x0;
     x = x * scale + viewerWidth / 3;
@@ -730,7 +742,7 @@ function initiateDrag(d, domNode) {
 
     // Setup everything for all the other nodes, except the one we are dragging.
     d3.selectAll(".node")
-        .filter(function(d) {
+        .filter(function (d) {
             if (d != draggingNode && d.type == "space") { // We can only move something to a space.
                 return d;
             }
@@ -743,7 +755,7 @@ function initiateDrag(d, domNode) {
                 .attr("transform", "scale(1.25)");
             d3.select(domNode).select("g.addIndicator")
                 .attr("class", "addIndicator visible").select("text")
-                    .text("ADD HERE");
+                .text("ADD HERE");
         })
         .on("mouseout", function (node) {
             targetNode = null;
@@ -803,16 +815,16 @@ function endDrag() {
         .on("mouseover", "")
         .on("mouseout", "")
         .select("g.scaler")
-            .transition()
-            .duration(300)
-            .attr("transform", "scale(1)");
+        .transition()
+        .duration(300)
+        .attr("transform", "scale(1)");
     // now restore the mouseover event or we won't be able to drag a 2nd time
     d3.select(domNode)
         .attr('pointer-events', '')
         .attr('class', 'node')
         .attr("style", "")
         .select("g.addIndicator")
-            .attr("class", "addIndicator");
+        .attr("class", "addIndicator");
     if (draggingNode !== null) {
         updateGraphVisualizer(draggingNode, true);
         draggingNode = null;
@@ -820,8 +832,8 @@ function endDrag() {
     }
 }
 
- // define the zoomListener which calls the zoom function on the "zoom" event constrained within the scaleExtents
- var zoomListener = d3.behavior.zoom()
+// define the zoomListener which calls the zoom function on the "zoom" event constrained within the scaleExtents
+var zoomListener = d3.behavior.zoom()
     .scaleExtent([0.1, 1])
     .on("zoom", zoom);
 
@@ -856,4 +868,3 @@ function pan(domNode, direction) {
         }, 50);
     }
 }
-
