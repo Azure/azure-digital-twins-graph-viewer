@@ -309,7 +309,8 @@ function postDigitalTwinsObject(objectType, jsonData, fComplete) {
 }
 
 // This function let's you make a patch request to the digital twins model.
-function patchDigitalTwins(objectId, objectType, jsonData, fComplete) {
+function patchDigitalTwins(object, objectType, jsonData, fComplete) {
+
     var resource = authContext.getResourceForEndpoint(getBaseUrl());
 
     authContext.acquireToken(
@@ -342,7 +343,7 @@ function patchDigitalTwins(objectId, objectType, jsonData, fComplete) {
                     return;
             }
 
-            url = url + objectId;
+            url = url + object.id;
             console.log(url)
             console.log(jsonData)
 
@@ -355,13 +356,56 @@ function patchDigitalTwins(objectId, objectType, jsonData, fComplete) {
                 url: url,
                 data: jsonData,
                 contentType: "application/json"
+            }).success(function () {
+
+                //If the dragged object is of type device, we will send additional patch requests to also update the parents space of the sensors of the dragged device
+                if (objectType == "device") {
+                    // If device sensors are currently displayed we need the children array
+                    if(Array.isArray(object.children) && object.children.length){
+                        object.children.forEach(function (childSensor) {
+                            patchDeviceChildSensors(object.spaceId, childSensor, jsonData, token);
+                            });
+                    }
+                    // If device sensors are currently not display, we need the _children array
+                    if(Array.isArray(object._children) && object._children.length){
+                        object._children.forEach(function (childSensor) {
+                        patchDeviceChildSensors(object.spaceId, childSensor, jsonData, token);
+                        });
+                    }
+                }
             }).complete(function (xhr, status) {
-                console.log(status);
-                console.log(xhr);
-                fComplete(status, xhr.responseJSON);
-            });
+                    console.log(status);
+                    console.log(xhr);
+                    fComplete(status, xhr.responseJSON);
+                });
         }
     );
+}
+
+//Function to update the parent space of sensors of a device 
+function patchDeviceChildSensors(deviceSpaceId, childSensor, jsonData, token) {
+
+    if (childSensor.spaceId != deviceSpaceId) {
+        patchDeviceChildSensors(childSensor, jsonData, token);
+        console.log("Skipped patching sensor " + childSensor.id + "due to it having a different parent space ID than its parent device")
+        return;
+    }
+
+    var url = getBaseUrl() + "api/v1.0/sensors/" + childSensor.id;
+
+    $.ajax({
+        type: "PATCH",
+        xhrFields: {
+            withCredentials: true
+        },
+        headers: { "Authorization": 'Bearer ' + token },
+        url: url,
+        data: jsonData,
+        contentType: "application/json"
+    }).error(function (err) {
+        console.log("Failed to patch ChildSensor with Id" + childSensor.id + ". Error: " + err);
+    });
+
 }
 
 function deleteDigitalTwinsObject(objectId, objectType, fComplete) {
@@ -557,7 +601,7 @@ function addObject(type, data, fComplete) {
 
 
 function updateObject(object, data, fComplete) {
-    patchDigitalTwins(object.id, object.type, JSON.stringify(data), function (status, response) {
+    patchDigitalTwins(object, object.type, JSON.stringify(data), function (status, response) {
         switch (status) {
             case "nocontent":
                 // We may need to update the label if the names have changed..
@@ -631,7 +675,7 @@ function objectDragAction(node, target, fEndDrag) {
     // Make the call
     $("#graphLoaderIcon").show();
     var updateDigitalTwins = $.Deferred();
-    patchDigitalTwins(node.id, node.type, jsonData, function (status, response) { 
+    patchDigitalTwins(node, node.type, jsonData, function (status, response) { 
         if (response)
             updateDigitalTwins.resolve(response.error.message); 
         else
