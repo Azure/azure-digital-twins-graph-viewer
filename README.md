@@ -1,8 +1,10 @@
 # IMPORTANT NOTE
 
-The Digital Twins Graph Viewer in this repository was built for the Digital Twins early preview released in 2018. It is not compatible with the latest Azure Digital Twins service released in June 2020. For interacting with the Azure Digital Twins service, please refer to the [documentation](https://docs.microsoft.com/en-us/azure/digital-twins/) for code samples.
+The Digital Twins Graph Viewer in this repository was built for the Digital Twins early preview released in 2018. It is not compatible with the latest Azure Digital Twins service released in June 2020. 
 
-**The code in this repository cannot be used with newly deployed Azure Digital Twins instances.**
+***For connecting to the new [Azure Digital Twins](https://docs.microsoft.com/en-us/azure/digital-twins/) service, please have a look at the [Azure Digital Twins Explorer](https://github.com/Azure-Samples/digital-twins-explorer).***
+
+
 
 # Introduction
 This "Azure Digital Twins Graph Viewer" serves as a front-end to the [Azure Digital Twins](https://azure.microsoft.com/en-us/services/digital-twins/) spatial intelligence graph. It provides the following features:
